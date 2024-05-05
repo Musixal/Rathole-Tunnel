@@ -12,8 +12,8 @@ wget -Nq https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole.s
 2) Download and install the main rathole core through option 4.
 3) Run the script on the your iran server. Specify the tunnel port and enter as many ports as you need for your configurations.
 4) Finally, add a reset timer through option 6.
-5) In the main (Kharej) server, the steps are similar to the Iran server. You only need to enter the IP address of the your iran server.
-6) Don't forget to add a timer to reset the service
+5) In the main (Kharej) server, the steps are similar to the Iran server. You only need to enter the IP address of the your Iran server.
+6) Don't forget to add a timer to reset the service in the main server.
 Good luck
 
 # Menu
