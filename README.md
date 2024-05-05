@@ -8,7 +8,7 @@ To use Rathole Tunnel, simply download and run the `rathole.sh` script. You can 
 ```
 wget -Nq https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole.sh && bash rathole.sh
 ```
-1) First of all download the script from the above link.
+1) First of all run the script using the link.
 2) Download and install the main rathole core through option 4.
 3) Run the script on the your iran server. Specify the tunnel port and enter as many ports as you need for your configurations.
 4) Finally, add a reset timer through option 6.
