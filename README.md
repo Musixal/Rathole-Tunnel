@@ -8,3 +8,6 @@ To use Rathole Tunnel, simply download and run the `rathole.sh` script. You can 
 ```
 wget -Nq https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole.sh && bash rathole.sh
 ```
+# Menu
+![Menu](https://github.com/Musixal/rathole-tunnel/blob/main/rathole-menu.png)
+
