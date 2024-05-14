@@ -167,6 +167,7 @@ type = "tcp"
 nodelay = true
 keepalive_secs = 20
 keepalive_interval = 8
+
 EOF
 
     # Add each config port to the configuration file
