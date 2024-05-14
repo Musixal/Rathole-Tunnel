@@ -1,6 +1,6 @@
 # Rathole Tunnel
 
-Rathole Tunnel is a tool for creating secure tunnels for network traffic.
+A secure, stable and high-performance reverse proxy for NAT traversal, written in Rust
 
 ## Installation
 
