@@ -562,9 +562,13 @@ add_cron_job_menu() {
     esac
 
 
-# Path ro reset file
-reset_path='/etc/reset.sh'
-    #add cron job to kill the process
+    # remove recent cronjobs
+    delete_cron_job > /dev/null 2>&1
+    
+    # Path ro reset file
+    reset_path='/etc/reset.sh'
+    
+    #add cron job to kill the running rathole processes
     cat << EOF > "$reset_path"
 #! /bin/bash
 pids=\$(pgrep rathole)
@@ -575,7 +579,7 @@ EOF
 
     # make it +x !
     chmod +x "$reset_path"
-
+    
     # Add cron job to restart the specified service at the chosen time
     add_cron_job "$reset_path" "$restart_time"
 
