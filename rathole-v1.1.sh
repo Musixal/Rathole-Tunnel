@@ -153,6 +153,22 @@ iran_server_configuration() {
         config_ports+=("$port")
     done
 
+echo ''
+
+# Initialize transport variable
+local transport=""
+
+# Keep prompting the user until a valid input is provided
+while [[ "$transport" != "tcp" && "$transport" != "udp" ]]; do
+    # Prompt the user to input transport type
+    read -p "Enter transport type (tcp/udp): " transport
+
+    # Check if the input is either tcp or udp
+    if [[ "$transport" != "tcp" && "$transport" != "udp" ]]; then
+        echo -e "${RED}Invalid transport type. Please enter 'tcp' or 'udp'.${NC}"
+    fi
+done
+
     # Generate server configuration file
     cat << EOF > "$iran_config_file"
 [server]
@@ -160,13 +176,8 @@ bind_addr = "0.0.0.0:${tunnel_port}"
 default_token = "musixal_tunnel"
 heartbeat_interval = 30
 
-[server.transport]  # Same as the client
+[server.transport]
 type = "tcp"
-
-[server.transport.tcp] # Same as the client
-nodelay = true
-keepalive_secs = 20
-keepalive_interval = 8
 
 EOF
 
@@ -174,8 +185,9 @@ EOF
     for port in "${config_ports[@]}"; do
         cat << EOF >> "$iran_config_file"
 [server.services.${port}]
+type = "$transport"
 bind_addr = "0.0.0.0:${port}"
-nodelay = true
+
 EOF
     done
     
@@ -259,6 +271,22 @@ kharej_server_configuration() {
         config_ports+=("$port")
     done
 
+echo ''
+# Initialize transport variable
+local transport=""
+
+# Keep prompting the user until a valid input is provided
+while [[ "$transport" != "tcp" && "$transport" != "udp" ]]; do
+    # Prompt the user to input transport type
+    read -p "Enter transport type (tcp/udp): " transport
+
+    # Check if the input is either tcp or udp
+    if [[ "$transport" != "tcp" && "$transport" != "udp" ]]; then
+        echo -e "${RED}Invalid transport type. Please enter 'tcp' or 'udp'.${NC}"
+    fi
+done
+
+
     # Generate server configuration file
     cat << EOF > "$kharej_config_file"
 [client]
@@ -270,21 +298,15 @@ retry_interval = 1
 [client.transport]
 type = "tcp"
 
-[client.transport.tcp]
-nodelay = true
-keepalive_secs = 20
-keepalive_interval = 8
-
 EOF
 
     # Add each config port to the configuration file
     for port in "${config_ports[@]}"; do
         cat << EOF >> "$kharej_config_file"
 [client.services.${port}]
-type = "tcp"
+type = "$transport"
 local_addr = "0.0.0.0:${port}"
-nodelay = true
-retry_interval = 1 
+
 EOF
     done
 
@@ -429,14 +451,14 @@ restart_services() {
 
 # Function to add cron-tab job
 add_cron_job() {
-    local service_name=$1
+    local reset_path=$1
     local restart_time=$2
 
     # Save existing crontab to a temporary file
     crontab -l > /tmp/crontab.tmp
 
     # Append the new cron job to the temporary file
-    echo "$restart_time systemctl restart $service_name # Added by rathole_script" >> /tmp/crontab.tmp
+    echo "$restart_time $reset_path # Added by rathole_script" >> /tmp/crontab.tmp
 
     # Install the modified crontab from the temporary file
     crontab /tmp/crontab.tmp
@@ -448,6 +470,7 @@ delete_cron_job() {
     # Delete all cron jobs added by this script
     echo ''
     crontab -l | grep -v '# Added by rathole_script' | crontab -
+    rm -f /etc/reset.sh >/dev/null 2>&1
     echo -e "${GREEN}Cron jobs added by this script have been deleted successfully.${NC}\n"
 }
 
@@ -538,8 +561,23 @@ add_cron_job_menu() {
             ;;
     esac
 
+
+# Path ro reset file
+reset_path='/etc/reset.sh'
+    #add cron job to kill the process
+    cat << EOF > "$reset_path"
+#! /bin/bash
+pids=\$(pgrep rathole)
+sudo kill -9 $pids
+sudo systemctl daemon-reload
+sudo systemctl restart $service_name
+EOF
+
+    # make it +x !
+    chmod +x "$reset_path"
+
     # Add cron job to restart the specified service at the chosen time
-    add_cron_job "$service_name" "$restart_time"
+    add_cron_job "$reset_path" "$restart_time"
 
     echo -e "${GREEN}Cron-job added successfully to restart the service '$service_name'.${NC}\n"
 }
@@ -572,16 +610,13 @@ download_and_extract_rathole() {
     fi
 
     DOWNLOAD_DIR=$(mktemp -d)
-    echo "Downloading Rathole from $DOWNLOAD_URL..."
+    echo -e "Downloading Rathole from $DOWNLOAD_URL...\n"
     sleep 1
     curl -sSL -o "$DOWNLOAD_DIR/rathole.zip" "$DOWNLOAD_URL"
-    echo ''
-    echo "Extracting Rathole..."
-    echo ''
+    echo -e "Extracting Rathole...\n"
     sleep 1
     unzip -q "$DOWNLOAD_DIR/rathole.zip" -d "$config_dir"
-    echo -e "${GREEN}Rathole installation completed.${NC}"
-    echo ''
+    echo -e "${GREEN}Rathole installation completed.${NC}\n"
     rm -rf "$DOWNLOAD_DIR"
     read -p "Press Enter to continue..."
 }
