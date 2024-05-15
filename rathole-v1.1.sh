@@ -362,10 +362,21 @@ destroy_tunnel() {
     echo -e "${YELLOW}Destroying tunnel...${NC}\n"
     sleep 1
     
-    # Removing Rathole-core
+    # Prompt to confirm before removing Rathole-core directory
+    read -p "Are you sure you want to remove Rathole-core? (y/n): " confirm
+    echo ''
+if [[ $confirm == [yY] ]]; then
     if [[ -d "$config_dir" ]]; then
         rm -rf "$config_dir"
+        echo -e "${GREEN}Rathole-core directory removed.${NC}\n"
+    else
+        echo -e "${RED}Rathole-core directory not found.${NC}\n"
     fi
+else
+    echo -e "${YELLOW}Removal canceled.${NC}\n"
+fi
+
+
     
     # Stop and disable the client service if it exists
     if [[ -f "$kharej_service_file" ]]; then
