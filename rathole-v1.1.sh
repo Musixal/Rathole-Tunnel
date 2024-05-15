@@ -377,7 +377,9 @@ else
 fi
 
 
-    
+    # remove cronjob created by thi script
+    delete_cron_job 
+    echo ''
     # Stop and disable the client service if it exists
     if [[ -f "$kharej_service_file" ]]; then
         if systemctl is-active "$kharej_service_name" &>/dev/null; then
@@ -417,17 +419,17 @@ check_tunnel_status() {
     
     # Check if the rathole-client-kharej service is active
     if systemctl is-active --quiet "$kharej_service_name"; then
-        echo -e "${GREEN}Kharej service is running.${NC}"
+        echo -e "${GREEN}Kharej service is running on this server.${NC}"
     else
-        echo -e "${RED}Kharej service is not running.${NC}"
+        echo -e "${RED}Kharej service is not running on this server.${NC}"
     fi
     
     echo ''
     # Check if the rathole-server-iran service is active
     if systemctl is-active --quiet "$iran_service_name"; then
-        echo -e "${GREEN}IRAN service is running.${NC}"
+        echo -e "${GREEN}IRAN service is running on this server..${NC}"
     else
-        echo -e "${RED}IRAN service is not running.${NC}"
+        echo -e "${RED}IRAN service is not running on this server..${NC}"
     fi
     echo ''
     read -p "Press Enter to continue..."
@@ -479,10 +481,9 @@ add_cron_job() {
 }
 delete_cron_job() {
     # Delete all cron jobs added by this script
-    echo ''
     crontab -l | grep -v '# Added by rathole_script' | crontab -
     rm -f /etc/reset.sh >/dev/null 2>&1
-    echo -e "${GREEN}Cron jobs added by this script have been deleted successfully.${NC}\n"
+    echo -e "${GREEN}Cron jobs added by this script have been deleted successfully.${NC}"
 }
 
 
@@ -508,6 +509,7 @@ cronjob_main() {
             return 1
             ;;
     esac
+    echo ''
     read -p "Press Enter to continue..."
 }
 
@@ -573,7 +575,7 @@ add_cron_job_menu() {
     esac
 
 
-    # remove recent cronjobs
+    # remove cronjob created by thi script
     delete_cron_job > /dev/null 2>&1
     
     # Path ro reset file
@@ -594,7 +596,7 @@ EOF
     # Add cron job to restart the specified service at the chosen time
     add_cron_job "$reset_path" "$restart_time"
 
-    echo -e "${GREEN}Cron-job added successfully to restart the service '$service_name'.${NC}\n"
+    echo -e "${GREEN}Cron-job added successfully to restart the service '$service_name'.${NC}"
 }
 
 # Function to download and extract Rathole Core
