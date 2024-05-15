@@ -39,6 +39,11 @@ ________________________________________________________________________________
 # Menu
 ![Menu](https://github.com/Musixal/rathole-tunnel/blob/main/rathole-menu.png)
 
+# My Channel
+Check my Telegram channel for more information:
+https://t.me/Gozar_Xray
+
+
 # Source
 
 https://github.com/rapiz1/rathole
