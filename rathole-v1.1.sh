@@ -97,6 +97,13 @@ display_rathole_core_status() {
 
 # Function for configuring tunnel
 configure_tunnel() {
+
+# check if the rathole-core installed or not
+if [[ ! -d "$config_dir" ]]; then
+    echo -e "${RED}Rathole-core directory not found. Install it first through option 4.${NC}"
+    return 1
+fi
+
     clear
     echo -e "${YELLOW}Configurating RatHole Tunnel...${NC}\n"
     echo -e "1. For ${GREEN}IRAN${NC} Server\n"
