@@ -550,9 +550,9 @@ download_and_extract_rathole() {
     # Check operating system
     if [[ $(uname) == "Linux" ]]; then
         ARCH=$(uname -m)
-        DOWNLOAD_URL=$(curl -sSL https://api.github.com/repos/rapiz1/rathole/releases/latest | grep -o "https://.*$ARCH.*linux.*zip" | head -n 1)
+        DOWNLOAD_URL=$(curl --ipv4 -sSL https://api.github.com/repos/rapiz1/rathole/releases/latest | grep -o "https://.*$ARCH.*linux.*zip" | head -n 1)
     elif [[ $(uname) == "Darwin" ]]; then
-        DOWNLOAD_URL=$(curl -sSL https://api.github.com/repos/rapiz1/rathole/releases/latest | grep -o "https://.*darwin.*zip" | head -n 1)
+        DOWNLOAD_URL=$(curl --ipv4 -sSL https://api.github.com/repos/rapiz1/rathole/releases/latest | grep -o "https://.*darwin.*zip" | head -n 1)
     else
         echo "Unsupported operating system."
         exit 1
@@ -565,7 +565,7 @@ download_and_extract_rathole() {
 
     DOWNLOAD_DIR=$(mktemp -d)
     echo "Downloading Rathole from $DOWNLOAD_URL..."
-    curl -sSL -o "$DOWNLOAD_DIR/rathole.zip" "$DOWNLOAD_URL"
+    curl --ipv4 -sSL -o "$DOWNLOAD_DIR/rathole.zip" "$DOWNLOAD_URL"
     echo "Extracting Rathole..."
     unzip -q "$DOWNLOAD_DIR/rathole.zip" -d /root/rathole-core
     echo "Rathole installation completed."
