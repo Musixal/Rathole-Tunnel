@@ -62,7 +62,7 @@ ________________________________________________________________________________
 
 
 # Menu
-![Menu](https://github.com/Musixal/rathole-tunnel/blob/main/rathole-menu.png)
+![Menu](https://github.com/Musixal/rathole-tunnel/blob/main/menu.png)
 
 # My Channel
 Check my Telegram channel for more information:
