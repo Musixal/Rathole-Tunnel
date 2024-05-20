@@ -5,23 +5,13 @@ A secure, stable and high-performance reverse proxy for NAT traversal, written i
 ## Installation
 
 
-⛔️**IMPORTANT!**
-
-**If you are currently using v1.0, destroy the tunnel with the v1.0 script before using v1.1.**
-
-_____________________________________________________________________________________
-
-
 To use Rathole Tunnel, simply download and run the script from the following link:
 
-**v1.1**
+
 ```
-wget -Nq https://github.com/Musixal/rathole-tunnel/raw/main/rathole-v1.1.sh && bash rathole-v1.1.sh
+wget -Nq https://github.com/Musixal/rathole-tunnel/raw/main/rathole.sh && bash rathole.sh
 ```
-**v1.0**
-```
-wget -Nq https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole.sh && bash rathole.sh
-```
+
 
 1) First of all run the script using the link.
 2) Download and install the main rathole core through option 4.
@@ -33,9 +23,6 @@ Good luck
 _____________________________________________________________________________________
 
 
-
-⛔️ **نکته مهم:**
-**اگر در حال حاضر از v1.0 استفاده می کنید، قبل از استفاده از v1.1 تانل رو با اسکریپت v1.0 حذف کنید.**
 
 ترنسپورت UDP اضافه شد و می تونید برای مثلا وایرگارد استفاده کنید.
 
