@@ -645,6 +645,7 @@ download_and_extract_rathole() {
     sleep 1
     unzip -q "$DOWNLOAD_DIR/rathole.zip" -d "$config_dir"
     echo -e "${GREEN}Rathole installation completed.${NC}\n"
+    chmod +x ${config_dir}/rathole
     rm -rf "$DOWNLOAD_DIR"
     read -p "Press Enter to continue..."
 }
