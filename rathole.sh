@@ -842,7 +842,7 @@ change_security_token() {
 
   echo -e "${GREEN}Current token:${NC} ${MAGENTA}$current_token${NC}"
   echo ''
-  random_token=$(head -c 32 /dev/urandom | base64)
+  random_token=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 32)
   echo -e "${GREEN}Random generated token:${NC} ${MAGENTA}$random_token${NC}"
   echo ''
   # Ask user for new token
