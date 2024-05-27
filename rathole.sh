@@ -829,7 +829,7 @@ read_option() {
         5) cronjob_main ;;
         6) ports_monitor_menu ;;
         7) download_and_extract_rathole ;;
-        7) exit 0 ;;
+        8) exit 0 ;;
         *) echo -e "${RED}Invalid option!${NC}" && sleep 1 ;;
     esac
 }
