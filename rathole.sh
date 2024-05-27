@@ -468,6 +468,7 @@ destroy_tunnel() {
     # Prompt to confirm before removing Rathole-core directory
     read -p "Are you sure you want to remove Rathole-core? (y/n): " confirm
     echo ''
+    
 if [[ $confirm == [yY] ]]; then
     if [[ -d "$config_dir" ]]; then
         rm -rf "$config_dir"
@@ -476,9 +477,19 @@ if [[ $confirm == [yY] ]]; then
         echo -e "${RED}Rathole-core directory not found.${NC}\n"
     fi
 else
-    echo -e "${YELLOW}Removal canceled.${NC}\n"
+    echo -e "${YELLOW}Rathole core removal canceled.${NC}\n"
 fi
 
+
+# Check if server.toml exists and delete it
+if [ -f "$iran_config_file" ]; then
+  rm -f "$iran_config_file"
+fi
+
+# Check if client.toml exists and delete it
+if [ -f "$kharej_config_file" ]; then
+  rm -f "$kharej_config_file"
+fi
 
     # remove cronjob created by thi script
     delete_cron_job 
@@ -797,6 +808,58 @@ del_iptables_rules(){
     echo ''
     read -p "Press any key to continue..."
 }
+
+# Function to check the security token
+check_security_token() {
+echo ''
+# Check if server.toml exists and update it
+if [ -f "$iran_config_file" ]; then
+  change_security_token "$iran_config_file"
+  return 0
+fi
+
+# Check if client.toml exists and update it
+if [ -f "$kharej_config_file" ]; then
+  change_security_token "$kharej_config_file"
+  return 0
+fi
+
+echo -e "${RED}Configs files not found!${NC}\n"
+read -p "Press any key to continue..."
+}
+
+# Function to update the security token
+change_security_token() {
+  local file_path=$1
+
+	echo -e "${RED}IMPORTANT!${NC} ${CYAN}The security token must be same in the iran and kharej server.${NC}\n"
+  # Show the current token
+  current_token=$(grep -Po '(?<=^default_token = ")[^"]*' "$file_path")
+  if [ -z "$current_token" ]; then
+    echo -e "${RED}default_token not found in $file_path${NC}"
+    return 1
+  fi
+
+  echo -e "${GREEN}Current token:${NC} ${MAGENTA}$current_token${NC}"
+  echo ''
+  random_token=$(head -c 32 /dev/urandom | base64)
+  echo -e "${GREEN}Random generated token:${NC} ${MAGENTA}$random_token${NC}"
+  echo ''
+  # Ask user for new token
+  read -p "Enter new token (or press Enter to use default value): " new_token
+
+  # Set default token if user didn't enter anything
+  if [ -z "$new_token" ]; then
+    new_token="musixal_tunnel"
+  fi
+
+  # Update the token in the file
+  sed -i "s/^default_token = \".*\"/default_token = \"$new_token\"/" "$file_path"
+  echo''
+  echo -e "${GREEN}Token updated successfully in $file_path${NC}\n"
+  read -p "Press any key to continue..."
+}
+
 # Color codes
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -818,8 +881,9 @@ display_menu() {
     echo -e "${YELLOW}4. Restart services${NC}"
     echo -e "5. Add & remove cron-job reset timer"
     echo -e "6. Port traffic monitoring"
- 	echo -e "7. Install Rathole core"
-    echo -e "8. Exit"
+    echo -e "7. Change security token (Advanced)"
+ 	echo -e "8. Install Rathole core"
+    echo -e "9. Exit"
     echo ''
     echo "-------------------------------"
 }
@@ -834,8 +898,9 @@ read_option() {
         4) restart_services ;;
         5) cronjob_main ;;
         6) ports_monitor_menu ;;
-        7) download_and_extract_rathole ;;
-        8) exit 0 ;;
+        7) check_security_token ;;
+        8) download_and_extract_rathole ;;
+        9) exit 0 ;;
         *) echo -e "${RED}Invalid option!${NC}" && sleep 1 ;;
     esac
 }
