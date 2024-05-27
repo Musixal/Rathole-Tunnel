@@ -101,6 +101,7 @@ download_and_extract_rathole() {
     # check if core installed already
     if [[ -d "$config_dir" ]]; then
         echo -e "${GREEN}Rathole Core is already installed.${NC}"
+        sleep 1
         return 1
     fi
     
@@ -186,7 +187,7 @@ configure_tunnel() {
 
 # check if the rathole-core installed or not
 if [[ ! -d "$config_dir" ]]; then
-    echo -e "\n${RED}Rathole-core directory not found. Install it first through option 4.${NC}\n"
+    echo -e "\n${RED}Rathole-core directory not found. Install it first through option 7.${NC}\n"
     read -p "Press Enter to continue..."
     return 1
 fi
@@ -810,7 +811,8 @@ display_menu() {
     echo -e "${YELLOW}4. Restart services${NC}"
     echo -e "5. Add & remove cron-job reset timer"
     echo -e "6. Ports monitoring menu"
-    echo -e "7. Exit"
+ 	echo -e "7. Install Rathole core"
+    echo -e "8. Exit"
     echo ''
     echo "-------------------------------"
 }
@@ -825,6 +827,7 @@ read_option() {
         4) restart_services ;;
         5) cronjob_main ;;
         6) ports_monitor_menu ;;
+        7) download_and_extract_rathole ;;
         7) exit 0 ;;
         *) echo -e "${RED}Invalid option!${NC}" && sleep 1 ;;
     esac
