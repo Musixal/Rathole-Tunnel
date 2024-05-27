@@ -817,7 +817,7 @@ display_menu() {
     echo -e "${CYAN}3. Check tunnel status${NC}"
     echo -e "${YELLOW}4. Restart services${NC}"
     echo -e "5. Add & remove cron-job reset timer"
-    echo -e "6. Ports monitoring menu"
+    echo -e "6. Port traffic monitoring"
  	echo -e "7. Install Rathole core"
     echo -e "8. Exit"
     echo ''
