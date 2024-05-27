@@ -111,7 +111,7 @@ download_and_extract_rathole() {
 	echo "Github Entry not found. Adding to /etc/hosts..."
         echo "$ENTRY" >> /etc/hosts
     else
-    echo "Entry already exists in /etc/hosts."
+    echo "Github entry already exists in /etc/hosts."
     fi
 
     # Check operating system
