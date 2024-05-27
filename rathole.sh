@@ -857,7 +857,8 @@ change_security_token() {
   sed -i "s/^default_token = \".*\"/default_token = \"$new_token\"/" "$file_path"
   echo''
   echo -e "${GREEN}Token updated successfully in $file_path${NC}\n"
-  read -p "Press any key to continue..."
+  restart_services
+
 }
 
 # Color codes
