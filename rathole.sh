@@ -167,18 +167,20 @@ EOF
 
 # Function to display server location and IP
 display_server_info() {
-    echo -e "${GREEN}Server Country:${NC} $SERVER_COUNTRY"
-    echo -e "${GREEN}Server IP:${NC} $SERVER_IP"
-    echo -e "${GREEN}Server ISP:${NC} $SERVER_ISP"
+    echo -e "\e[93m══════════════════════════════════════════════════════\e[0m"  
+    echo -e "${CYAN}Server Country:${NC} $SERVER_COUNTRY"
+    echo -e "${CYAN}Server IP:${NC} $SERVER_IP"
+    echo -e "${CYAN}Server ISP:${NC} $SERVER_ISP"
 }
 
 # Function to display Rathole Core installation status
 display_rathole_core_status() {
     if [[ -d "$config_dir" ]]; then
-        echo -e "${GREEN}Rathole Core installed.${NC}"
+        echo -e "${CYAN}Rathole Core:${NC} ${GREEN}Installed.${NC}"
     else
-        echo -e "${RED}Rathole Core not installed.${NC}"
+        echo -e "${CYAN}Rathole Core:${NC} ${RED}Not installed.${NC}"
     fi
+    echo -e "\e[93m══════════════════════════════════════════════════════\e[0m"  
 }
 
 
@@ -794,6 +796,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 CYAN='\033[0;34m'
 CYAN='\e[36m'
+MAGENTA="\e[95m"
 NC='\033[0m' # No Color
 
 # Function to display menu
@@ -801,9 +804,7 @@ display_menu() {
     clear
     display_logo
     display_server_info
-    echo "-------------------------------"
     display_rathole_core_status
-    echo "-------------------------------"
     echo ''
     echo -e "${GREEN}1. Configure tunnel${NC}"
     echo -e "${RED}2. Destroy tunnel${NC}"
