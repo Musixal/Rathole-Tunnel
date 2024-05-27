@@ -21,7 +21,6 @@ install_unzip() {
             read -p "Press any key to continue..."
             exit 1
         fi
-    
     else
         echo -e "${GREEN}unzip is already installed.${NC}"
     fi
@@ -44,16 +43,100 @@ install_jq() {
             read -p "Press any key to continue..."
             exit 1
         fi
-    
     else
         echo -e "${GREEN}jq is already installed.${NC}"
-    
     fi
-    
 }
 
 # Install jq
 install_jq
+
+
+install_iptables() {
+    if ! command -v iptables &> /dev/null; then
+        # Check if the system is using apt package manager
+        if command -v apt-get &> /dev/null; then
+            echo -e "${RED}iptables is not installed. Installing...${NC}"
+            sleep 1
+            sudo apt-get update
+            sudo apt-get install -y iptables
+        else
+            echo -e "${RED}Error: Unsupported package manager. Please install iptables manually.${NC}\n"
+            read -p "Press any key to continue..."
+            exit 1
+        fi
+    else
+        echo -e "${GREEN}iptables is already installed.${NC}"
+    fi
+}
+
+# Install iptables
+install_iptables
+
+install_bc() {
+    if ! command -v bc &> /dev/null; then
+        # Check if the system is using apt package manager
+        if command -v apt-get &> /dev/null; then
+            echo -e "${RED}bc is not installed. Installing...${NC}"
+            sleep 1
+            sudo apt-get update
+            sudo apt-get install -y bc
+        else
+            echo -e "${RED}Error: Unsupported package manager. Please install bc manually.${NC}\n"
+            read -p "Press any key to continue..."
+            exit 1
+        fi
+    else
+        echo -e "${GREEN}bc is already installed.${NC}"
+    fi
+}
+
+# Install bc
+install_bc
+
+
+config_dir="/root/rathole-core"
+# Function to download and extract Rathole Core
+download_and_extract_rathole() {
+    # check if core installed already
+    if [[ -d "$config_dir" ]]; then
+        echo -e "${GREEN}Rathole Core is already installed.${NC}"
+        return 1
+    fi
+    
+    # Check operating system
+    if [[ $(uname) == "Linux" ]]; then
+        ARCH=$(uname -m)
+        DOWNLOAD_URL=$(curl -sSL https://api.github.com/repos/rapiz1/rathole/releases/latest | grep -o "https://.*$ARCH.*linux.*zip" | head -n 1)
+    else
+        echo -e "${RED}Unsupported operating system.${NC}"
+        sleep 1
+        exit 1
+    fi
+    if [[ "$ARCH" == "x86_64" ]]; then
+    	DOWNLOAD_URL='https://github.com/Musixal/rathole-tunnel/raw/main/rathole.zip'
+    fi
+
+    if [ -z "$DOWNLOAD_URL" ]; then
+        echo -e "${RED}Failed to retrieve download URL.${NC}"
+        sleep 1
+        exit 1
+    fi
+
+    DOWNLOAD_DIR=$(mktemp -d)
+    echo -e "Downloading Rathole from $DOWNLOAD_URL...\n"
+    sleep 1
+    curl -sSL -o "$DOWNLOAD_DIR/rathole.zip" "$DOWNLOAD_URL"
+    echo -e "Extracting Rathole...\n"
+    sleep 1
+    unzip -q "$DOWNLOAD_DIR/rathole.zip" -d "$config_dir"
+    echo -e "${GREEN}Rathole installation completed.${NC}\n"
+    chmod u+x ${config_dir}/rathole
+    rm -rf "$DOWNLOAD_DIR"
+}
+
+#Download and extract the Rathole core
+download_and_extract_rathole
 
 # Get server IP
 SERVER_IP=$(hostname -I | awk '{print $1}')
@@ -66,14 +149,17 @@ SERVER_ISP=$(curl -sS "http://ip-api.com/json/$SERVER_IP" | jq -r '.isp')
 
 # Function to display ASCII logo
 display_logo() {
-    echo -e "${BLUE}"
+    echo -e "${CYAN}"
     cat << "EOF"
- ____      _  _____ _   _  ___  _     _____ 
-|  _ \    / \|_   _| | | |/ _ \| |   | ____|
-| |_) |  / _ \ | | | |_| | | | | |   |  _|  
-|  _ <  / ___ \| | |  _  | |_| | |___| |___ 
-|_| \_\/_/   \_\_| |_| |_|\___/|_____|_____|  
-                  By github.com/Musixal v1.1                       
+              __    __              ___             
+             /\ \__/\ \            /\_ \            
+ _ __    __  \ \ ,_\ \ \___     ___\//\ \      __   
+/\`'__\/'__`\ \ \ \/\ \  _ `\  / __`\\ \ \   /'__`\ 
+\ \ \//\ \L\.\_\ \ \_\ \ \ \ \/\ \L\ \\_\ \_/\  __/ 
+ \ \_\\ \__/.\_\\ \__\\ \_\ \_\ \____//\____\ \____\
+  \/_/ \/__/\/_/ \/__/ \/_/\/_/\/___/ \/____/\/____/
+
+                  By github.com/Musixal v1.2                       
 EOF
     echo -e "${NC}"
 }
@@ -108,7 +194,7 @@ fi
     clear
     echo -e "${YELLOW}Configurating RatHole Tunnel...${NC}\n"
     echo -e "1. For ${GREEN}IRAN${NC} Server\n"
-    echo -e "2. For ${BLUE}Kharej${NC} Server\n"
+    echo -e "2. For ${CYAN}Kharej${NC} Server\n"
     read -p "Enter your choice: " configure_choice
     case "$configure_choice" in
         1) iran_server_configuration ;;
@@ -121,7 +207,6 @@ fi
 
 
 #Global Variables
-     config_dir="/root/rathole-core"
      iran_config_file="${config_dir}/server.toml"
      iran_service_name="rathole-iran.service"
      iran_service_file="/etc/systemd/system/${iran_service_name}"
@@ -500,7 +585,7 @@ cronjob_main() {
      clear
      # Prompt user for action
     echo -e "Select an option: \n"
-    echo -e "${BLUE}1. Add a cron-job to restart a service${NC}\n"
+    echo -e "${CYAN}1. Add a cron-job to restart a service${NC}\n"
     echo -e "${RED}2. Delete cron jobs added by this script${NC}\n"
     read -p "Enter your choice: " action_choice
     echo ''
@@ -525,7 +610,7 @@ add_cron_job_menu() {
     clear
     # Prompt user to choose a service
     echo -e "Select the service you want to restart:\n"
-    echo -e "${BLUE}1. Kharej service${NC}"
+    echo -e "${CYAN}1. Kharej service${NC}"
     echo -e "${GREEN}2. IRAN service${NC}"
     echo ''
     read -p "Enter your choice: " service_choice
@@ -607,55 +692,107 @@ EOF
     echo -e "${GREEN}Cron-job added successfully to restart the service '$service_name'.${NC}"
 }
 
-# Function to download and extract Rathole Core
-download_and_extract_rathole() {
+# main maenu for showing ports monitoring options
+ports_monitor_menu(){
+    clear
+    # Prompt user to choose a option
+    echo -e "Select the option you want to do:\n"
+    echo -e "${CYAN}1. Add ports to iptables rules${NC}"
+    echo -e "${GREEN}2. View live traffic usage${NC}"
+    echo -e "${RED}3. Remove iptables rules${NC}"
     echo ''
-    # check if core installed already
-    if [[ -d "$config_dir" ]]; then
-        echo -e "${GREEN}Rathole Core is already installed.${NC}"
-        echo ''
-        read -p "Press Enter to continue..."
-        return 1
-    fi
-    
-    # Check operating system
-    if [[ $(uname) == "Linux" ]]; then
-        ARCH=$(uname -m)
-        DOWNLOAD_URL=$(curl -sSL https://api.github.com/repos/rapiz1/rathole/releases/latest | grep -o "https://.*$ARCH.*linux.*zip" | head -n 1)
-    else
-        echo -e "${RED}Unsupported operating system.${NC}"
-        sleep 1
-        exit 1
-    fi
-    if [[ "$ARCH" == "x86_64" ]]; then
-    	DOWNLOAD_URL='https://github.com/Musixal/rathole-tunnel/raw/main/rathole.zip'
-    fi
-
-    if [ -z "$DOWNLOAD_URL" ]; then
-        echo -e "${RED}Failed to retrieve download URL.${NC}"
-        sleep 1
-        exit 1
-    fi
-
-    DOWNLOAD_DIR=$(mktemp -d)
-    echo -e "Downloading Rathole from $DOWNLOAD_URL...\n"
-    sleep 1
-    curl -sSL -o "$DOWNLOAD_DIR/rathole.zip" "$DOWNLOAD_URL"
-    echo -e "Extracting Rathole...\n"
-    sleep 1
-    unzip -q "$DOWNLOAD_DIR/rathole.zip" -d "$config_dir"
-    echo -e "${GREEN}Rathole installation completed.${NC}\n"
-    chmod u+x ${config_dir}/rathole
-  
-    rm -rf "$DOWNLOAD_DIR"
-    read -p "Press Enter to continue..."
+    read -p "Enter your choice: " option_choice
+    echo ''
+    # Validate user input
+    case $option_choice in
+        1)
+			add_iptables_rules
+            ;;
+        2)
+			view_traffic_usage
+            ;;
+        3)
+        	del_iptables_rules
+        	;;
+        *)
+            echo -e "${RED}Invalid choice. Please enter valid number.${NC}"
+            sleep 1
+            return 1
+            ;;
+    esac
 }
 
+add_iptables_rules() {
+    echo ''
+    # Prompt user to enter ports
+    read -p "Enter the desired ports separated by commas : " ports
+    IFS=',' read -r -a port_array <<< "$ports"
+	echo ''
+    for port in "${port_array[@]}"; do
+        # Check if the entered value is a valid integer
+        if grep -wqE '^[0-9]+$' <<< "$port"; then
+            # Check if the port with comment "rathole" already exists
+            if ! iptables -C INPUT -p tcp --dport "$port" -j ACCEPT -m comment --comment "rathole" &>/dev/null; then
+                iptables -A INPUT -p tcp --dport "$port" -j ACCEPT -m comment --comment "rathole"
+                echo -e "${GREEN}Port $port added to iptables.${NC}"
+            else
+                echo -e "${YELLOW}Port $port already exists in iptables. Skipping...${NC}"
+            fi
+        else
+            echo -e "${RED}Invalid port number: $port. Skipping...${NC}"
+        fi
+    done
+    echo ''
+    echo -e "${GREEN}All desired ports added to iptables successfully${NC}"
+    echo ''
+    read -p "Press any key to continue..."
+}
+
+
+# Function to draw a horizontal line
+draw_line() {
+    printf "$+----------+------------+\n"
+}
+
+# Function to draw table rows
+draw_row() {
+    printf "| %-8s | %-10s |\n" "$1" "$2"
+}
+
+# Main function to draw the table
+view_traffic_usage() {
+	clear
+    draw_line
+    draw_row "Port" "Traffic"
+    draw_line
+    # Use command substitution to get port numbers dynamically
+    ports=$(iptables -L -v --numeric | grep -i -w "rathole" | grep -o 'tcp dpt:[0-9]\+' | awk -F':' '{print $2}')
+    # Use command substitution to get traffic information dynamically
+    traffic=$(iptables -L -v --numeric | grep -i -w "rathole" | awk '{print $2}')
+    for port in $ports; do
+        # Find the corresponding traffic value for each port
+        index=$(echo $ports | tr ' ' '\n' | grep -n -w $port | cut -d ':' -f1)
+        traffic_val=$(echo $traffic | tr ' ' '\n' | sed -n ${index}p)
+        draw_row "$port" "$traffic_val"
+    done
+    draw_line
+    echo ''
+    read -p "Press any key to continue..."
+}
+
+del_iptables_rules(){
+	iptables-save | grep -v 'rathole' > /tmp/iptables-filtered.rules
+	iptables-restore < /tmp/iptables-filtered.rules
+    echo -e "${GREEN}All iptables rules related to this script deleted successfully${NC}"
+    echo ''
+    read -p "Press any key to continue..."
+}
 # Color codes
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
+CYAN='\033[0;34m'
+CYAN='\e[36m'
 NC='\033[0m' # No Color
 
 # Function to display menu
@@ -669,10 +806,10 @@ display_menu() {
     echo ''
     echo -e "${GREEN}1. Configure tunnel${NC}"
     echo -e "${RED}2. Destroy tunnel${NC}"
-    echo -e "${BLUE}3. Check tunnel status${NC}"
-    echo -e "4. Install Rathole Core"
-    echo -e "${YELLOW}5. Restart services${NC}"
-    echo -e "6. Add & remove cron-job reset timer"
+    echo -e "${CYAN}3. Check tunnel status${NC}"
+    echo -e "${YELLOW}4. Restart services${NC}"
+    echo -e "5. Add & remove cron-job reset timer"
+    echo -e "6. Ports monitoring menu"
     echo -e "7. Exit"
     echo ''
     echo "-------------------------------"
@@ -685,9 +822,9 @@ read_option() {
         1) configure_tunnel ;;
         2) destroy_tunnel ;;
         3) check_tunnel_status ;;
-        4) download_and_extract_rathole ;;
-        5) restart_services ;;
-        6) cronjob_main ;;
+        4) restart_services ;;
+        5) cronjob_main ;;
+        6) ports_monitor_menu ;;
         7) exit 0 ;;
         *) echo -e "${RED}Invalid option!${NC}" && sleep 1 ;;
     esac
