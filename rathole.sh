@@ -176,9 +176,9 @@ display_server_info() {
 # Function to display Rathole Core installation status
 display_rathole_core_status() {
     if [[ -d "$config_dir" ]]; then
-        echo -e "${CYAN}Rathole Core:${NC} ${GREEN}Installed.${NC}"
+        echo -e "${CYAN}Rathole Core:${NC} ${GREEN}Installed${NC}"
     else
-        echo -e "${CYAN}Rathole Core:${NC} ${RED}Not installed.${NC}"
+        echo -e "${CYAN}Rathole Core:${NC} ${RED}Not installed${NC}"
     fi
     echo -e "\e[93m════════════════════════════════════════════════════\e[0m"  
 }
