@@ -51,7 +51,6 @@ install_jq() {
 # Install jq
 install_jq
 
-
 install_iptables() {
     if ! command -v iptables &> /dev/null; then
         # Check if the system is using apt package manager
@@ -104,7 +103,17 @@ download_and_extract_rathole() {
         sleep 1
         return 1
     fi
-    
+
+    # Define the entry to check/add
+     ENTRY="185.199.108.133 raw.githubusercontent.com"
+    # Check if the github entry exists in /etc/hosts
+    if ! grep -q "$ENTRY" /etc/hosts; then
+	echo "Github Entry not found. Adding to /etc/hosts..."
+        echo "$ENTRY" >> /etc/hosts
+    else
+    echo "Entry already exists in /etc/hosts."
+    fi
+
     # Check operating system
     if [[ $(uname) == "Linux" ]]; then
         ARCH=$(uname -m)
