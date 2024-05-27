@@ -763,7 +763,7 @@ draw_row() {
 view_traffic_usage() {
 	clear
     draw_line
-    draw_row "Port" "Usage(bytes)"
+    draw_row "Port" "Traffic (B)"
     draw_line
     # Use command substitution to get port numbers dynamically
     ports=$(iptables -L -v --numeric | grep -i -w "rathole" | grep -o 'tcp dpt:[0-9]\+' | awk -F':' '{print $2}')
