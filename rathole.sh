@@ -160,7 +160,7 @@ display_logo() {
  \ \_\\ \__/.\_\\ \__\\ \_\ \_\ \____//\____\ \____\
   \/_/ \/__/\/_/ \/__/ \/_/\/_/\/___/ \/____/\/____/
 
-                  By github.com/Musixal v1.2                       
+                  ${MAGENTA}By: github.com/Musixal v1.2 ${NC}                      
 EOF
     echo -e "${NC}"
 }
