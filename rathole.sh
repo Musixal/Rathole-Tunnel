@@ -718,10 +718,9 @@ ports_monitor_menu(){
     clear
     # Prompt user to choose a option
     echo -e "Select the option you want to do:\n"
-    echo -e "${CYAN}1. Add ports for monitoring traffic${NC}"
-    echo -e "${GREEN}2. View traffic usage${NC}"
-    echo -e "${RED}3. Remove iptables rules${NC}"
-    echo ''
+    echo -e "${CYAN}1. Add ports for monitoring traffic${NC}\n"
+    echo -e "${GREEN}2. View traffic usage${NC}\n"
+    echo -e "${RED}3. Remove iptables rules${NC}\n"
     read -p "Enter your choice: " option_choice
     echo ''
     # Validate user input
