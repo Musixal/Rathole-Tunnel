@@ -355,9 +355,9 @@ kharej_server_configuration() {
 for ((j=1; j<=$SERVER_NUM; j++)); do
 
     clear
-    echo -e "${CYAN}Let's create a tunnel for server $j${NC}\n" 
+    echo -e "${CYAN}Let's create a tunnel for server $j${NC}" 
     echo -e "\e[93m═════════════════════════════════════════════\e[0m"  
-           
+    echo ''    
     # Read the server address
     read -p "Enter the IRAN server address: " SERVER_ADDR
 
