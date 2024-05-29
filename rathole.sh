@@ -856,6 +856,7 @@ if ls $kharej_config_file 1> /dev/null 2>&1; then
          filename=$(basename "$file")   
          change_security_token "$file" "${filename:8:-5}"
          echo -e "${CYAN} _____________________________________________ ${NC}"
+	 echo ''
          sleep 1
      done
   restart_services
