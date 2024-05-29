@@ -221,7 +221,8 @@ fi
      iran_service_name="rathole-iran.service"
      iran_service_file="/etc/systemd/system/${iran_service_name}"
 
-    kharej_config_file="${config_dir}/client.toml"
+   
+    kharej_config_file="${config_dir}/client*.toml"
     kharej_service_name="rathole-kharej.service"
     kharej_service_file="/etc/systemd/system/${kharej_service_name}"
     
@@ -323,7 +324,7 @@ EOF
     fi
 
     # Enable the service to start on boot
-    if systemctl enable "$iran_service_name"; then
+    if systemctl enable "$iran_service_name" >/dev/null 2>&1; then
         echo -e "${GREEN}Service '$iran_service_name' enabled to start on boot.${NC}"
     else
         echo -e "${RED}Failed to enable service '$iran_service_name'. Please check your system configuration.${NC}"
@@ -343,7 +344,18 @@ EOF
 kharej_server_configuration() {
     clear
     echo -e "${YELLOW}Configuring kharej server...${NC}\n"
+    read -p "How many IRAN server do you have: " SERVER_NUM
     
+    local EXEC_COMMAND="/bin/bash -c '"
+    
+#___________________________________________________________________ Start of the loop  
+
+for ((j=1; j<=$SERVER_NUM; j++)); do
+
+    clear
+    echo -e "${CYAN}Let's create a tunnel for server $j${NC}\n" 
+    echo -e "\e[93m═════════════════════════════════════════════\e[0m"  
+           
     # Read the server address
     read -p "Enter the IRAN server address: " SERVER_ADDR
 
@@ -374,12 +386,12 @@ kharej_server_configuration() {
         config_ports+=("$port")
     done
 
-echo ''
-# Initialize transport variable
-local transport=""
+    echo ''
+    # Initialize transport variable
+    local transport=""
 
-# Keep prompting the user until a valid input is provided
-while [[ "$transport" != "tcp" && "$transport" != "udp" ]]; do
+    # Keep prompting the user until a valid input is provided
+    while [[ "$transport" != "tcp" && "$transport" != "udp" ]]; do
     # Prompt the user to input transport type
     read -p "Enter transport type (tcp/udp): " transport
 
@@ -387,8 +399,10 @@ while [[ "$transport" != "tcp" && "$transport" != "udp" ]]; do
     if [[ "$transport" != "tcp" && "$transport" != "udp" ]]; then
         echo -e "${RED}Invalid transport type. Please enter 'tcp' or 'udp'.${NC}"
     fi
-done
+    done
 
+    #this new format allow us to build various client_port.toml 
+    local kharej_config_file="${config_dir}/client_p${tunnel_port}.toml"
 
     # Generate server configuration file
     cat << EOF > "$kharej_config_file"
@@ -413,6 +427,16 @@ local_addr = "0.0.0.0:${port}"
 EOF
     done
 
+# Now modify ExecCommand for our service file
+    EXEC_COMMAND+=" ${config_dir}/rathole ${kharej_config_file};"
+    sleep 1
+done
+  
+#______________________________________________________________________________End of the loop
+    
+    #Need that last '
+    EXEC_COMMAND+="'"
+    
     echo ''
     echo -e "${GREEN}Kharej server configuration completed.${NC}\n"
     echo -e "${GREEN}Starting Rathole server as a service...${NC}\n"
@@ -425,7 +449,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=${config_dir}/rathole ${kharej_config_file}
+ExecStart=$EXEC_COMMAND
 Restart=always
 RestartSec=3
 
@@ -442,7 +466,7 @@ EOF
     fi
 
     # Enable the service to start on boot
-    if systemctl enable "$kharej_service_name"; then
+    if systemctl enable "$kharej_service_name" >/dev/null 2>&1; then
         echo -e "${GREEN}Service '$kharej_service_name' enabled to start on boot.${NC}"
     else
         echo -e "${RED}Failed to enable service '$kharej_service_name'. Please check your system configuration.${NC}"
@@ -487,8 +511,10 @@ if [ -f "$iran_config_file" ]; then
 fi
 
 # Check if client.toml exists and delete it
-if [ -f "$kharej_config_file" ]; then
-  rm -f "$kharej_config_file"
+if ls $kharej_config_file 1> /dev/null 2>&1; then
+    for file in $kharej_config_file; do
+         rm -f $file
+    done
 fi
 
     # remove cronjob created by thi script
@@ -512,7 +538,8 @@ fi
         fi
         rm -f "$iran_service_file"
     fi
-
+    
+    echo ''
     # Reload systemd to read the new unit file
     if systemctl daemon-reload; then
         echo -e "Systemd daemon reloaded.\n"
@@ -811,15 +838,25 @@ del_iptables_rules(){
 # Function to check the security token
 check_security_token() {
 echo ''
+echo -e "${RED}IMPORTANT!${NC} ${CYAN}The security token must be same in the iran and kharej server.${NC}\n"
+
 # Check if server.toml exists and update it
 if [ -f "$iran_config_file" ]; then
-  change_security_token "$iran_config_file"
-  return 0
+     port=$(cat "$iran_config_file" | grep -oP 'bind_addr = "0\.0\.0\.0:\K[0-9]+' | head -n1)  
+     change_security_token "$iran_config_file" "$port"
+     restart_services
+     return 0
 fi
 
 # Check if client.toml exists and update it
-if [ -f "$kharej_config_file" ]; then
-  change_security_token "$kharej_config_file"
+if ls $kharej_config_file 1> /dev/null 2>&1; then
+     for file in $kharej_config_file; do
+         filename=$(basename "$file")   
+         change_security_token "$file" "${filename:8:-5}"
+         echo -e "${CYAN} _____________________________________________ ${NC}"
+         sleep 1
+     done
+  restart_services
   return 0
 fi
 
@@ -830,15 +867,16 @@ read -p "Press any key to continue..."
 # Function to update the security token
 change_security_token() {
   local file_path=$1
+  local port_num=$2
 
-	echo -e "${RED}IMPORTANT!${NC} ${CYAN}The security token must be same in the iran and kharej server.${NC}\n"
   # Show the current token
   current_token=$(grep -Po '(?<=^default_token = ")[^"]*' "$file_path")
   if [ -z "$current_token" ]; then
     echo -e "${RED}default_token not found in $file_path${NC}"
     return 1
   fi
-
+  
+  echo -e "${GREEN}Current tunnel port number:${NC} ${MAGENTA}$port_num${NC}"  
   echo -e "${GREEN}Current token:${NC} ${MAGENTA}$current_token${NC}"
   echo ''
   random_token=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 32)
@@ -856,7 +894,46 @@ change_security_token() {
   sed -i "s/^default_token = \".*\"/default_token = \"$new_token\"/" "$file_path"
   echo''
   echo -e "${GREEN}Token updated successfully in $file_path${NC}\n"
-  restart_services
+}
+
+update_script(){
+# Define the destination path
+DEST_DIR="/usr/bin/"
+RATHOLE_SCRIPT="rathole"
+SCRIPT_URL="https://github.com/Musixal/rathole-tunnel/raw/main/rathole.sh"
+
+echo ''
+# Check if rathole.sh exists in /bin/bash
+if [ -f "$DEST_DIR/$RATHOLE_SCRIPT" ]; then
+    # Remove the existing rathole
+    rm "$DEST_DIR/$RATHOLE_SCRIPT"
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Existing $RATHOLE_SCRIPT has been successfully removed from $DEST_DIR.${NC}"
+    else
+        echo -e "${RED}Failed to remove existing $RATHOLE_SCRIPT from $DEST_DIR.${NC}"
+        sleep 1
+        return 1
+    fi
+else
+    echo -e "${YELLOW}$RATHOLE_SCRIPT does not exist in $DEST_DIR. No need to remove.${NC}"
+fi
+echo ''
+# Download the new rathole.sh from the GitHub URL
+echo -e "${CYAN}Downloading the new $RATHOLE_SCRIPT from $SCRIPT_URL...${NC}"
+
+curl -s -L -o "$DEST_DIR/$RATHOLE_SCRIPT" "$SCRIPT_URL"
+
+echo ''
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}New $RATHOLE_SCRIPT has been successfully downloaded to $DEST_DIR.${NC}\n"
+    chmod +x "$DEST_DIR/$RATHOLE_SCRIPT"
+    echo -e "${CYAN}Please exit the script and type 'rathole' to run it again${NC}\n"
+    read -p "Press any key to continue..."
+else
+    echo -e "${RED}Failed to download $RATHOLE_SCRIPT from $SCRIPT_URL.${NC}"
+    sleep 1
+    return 1
+fi
 
 }
 
@@ -883,7 +960,8 @@ display_menu() {
     echo -e "6. Port traffic monitoring"
     echo -e "7. Change security token (Advanced)"
  	echo -e "8. Install Rathole core"
-    echo -e "9. Exit"
+ 	echo -e "9. Update script"
+    echo -e "10. Exit"
     echo ''
     echo "-------------------------------"
 }
@@ -900,7 +978,8 @@ read_option() {
         6) ports_monitor_menu ;;
         7) check_security_token ;;
         8) download_and_extract_rathole ;;
-        9) exit 0 ;;
+        9) update_script ;;
+        10) exit 0 ;;
         *) echo -e "${RED}Invalid option!${NC}" && sleep 1 ;;
     esac
 }
