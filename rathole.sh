@@ -954,7 +954,7 @@ display_menu() {
     display_rathole_core_status
     echo ''
     echo -e "${GREEN}1. Configure new tunnel${NC}"
-    echo -e "${RED}2. Remove tunnel and configs${NC}"
+    echo -e "${RED}2. Remove tunnel${NC}"
     echo -e "${CYAN}3. Check tunnel status${NC}"
     echo -e "${YELLOW}4. Restart all services${NC}"
     echo -e "5. Add & remove cron-job reset timer"
