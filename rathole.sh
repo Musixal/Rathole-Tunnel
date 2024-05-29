@@ -167,7 +167,7 @@ ____________ _/  |_|  |__   ____ |  |   ____
  |  | \// __ \|  | |   Y  (  <_> |  |_\  ___/ 
  |__|  (____  |__| |___|  /\____/|____/\___  >
             \/          \/                 \/ 	
-               	By: github.com/Musixal v1.2 
+               	By: github.com/Musixal v1.3 
 EOF
     echo -e "${NC}"
 }
@@ -202,7 +202,9 @@ if [[ ! -d "$config_dir" ]]; then
 fi
 
     clear
-    echo -e "${YELLOW}Configurating RatHole Tunnel...${NC}\n"
+    echo -e "${YELLOW}Configurating RatHole Tunnel...${NC}"
+    echo -e "\e[93m═════════════════════════════════════════════\e[0m" 
+    echo ''
     echo -e "1. For ${GREEN}IRAN${NC} Server\n"
     echo -e "2. For ${CYAN}Kharej${NC} Server\n"
     read -p "Enter your choice: " configure_choice
