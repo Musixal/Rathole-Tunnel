@@ -929,6 +929,7 @@ if [ $? -eq 0 ]; then
     chmod +x "$DEST_DIR/$RATHOLE_SCRIPT"
     echo -e "${CYAN}Please exit the script and type 'rathole' to run it again${NC}\n"
     read -p "Press any key to continue..."
+    exit 0
 else
     echo -e "${RED}Failed to download $RATHOLE_SCRIPT from $SCRIPT_URL.${NC}"
     sleep 1
