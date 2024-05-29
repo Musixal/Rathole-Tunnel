@@ -969,7 +969,7 @@ display_menu() {
 
 # Function to read user input
 read_option() {
-    read -p "Enter your choice: " choice
+    read -p "Enter your choice [1-10]: " choice
     case $choice in
         1) configure_tunnel ;;
         2) destroy_tunnel ;;
