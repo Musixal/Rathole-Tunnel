@@ -232,7 +232,8 @@ fi
 # Function to check if a given string is a valid IPv6 address
 check_ipv6() {
     local ip=$1
-
+    # Define the IPv6 regex pattern
+    ipv6_pattern="^([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4}|:)$|^(([0-9a-fA-F]{1,4}:){1,7}|:):((:[0-9a-fA-F]{1,4}){1,7}|:)$"
     # Remove brackets if present
     ip="${ip#[}"
     ip="${ip%]}"
@@ -1037,4 +1038,3 @@ do
     display_menu
     read_option
 done
-
