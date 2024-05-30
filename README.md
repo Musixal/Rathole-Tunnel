@@ -104,9 +104,9 @@ wget -Nq https://github.com/Musixal/rathole-tunnel/raw/main/rathole.sh && bash r
 
 # مشاهده ی Log سرویس 
 
-برای مشاهده ی لاگ سرویس ایران از دستور `journalctl -xe rathole-iran.service` استفاده کنید.
+برای مشاهده ی لاگ سرویس ایران از دستور `journalctl -eu rathole-iran.service` استفاده کنید.
 
-برای مشاهده لاگ سرویس خارج از دستور `journalctl -xe rathole-kharej.service` استفاده کنید.
+برای مشاهده لاگ سرویس خارج از دستور `journalctl -eu rathole-kharej.service` استفاده کنید.
 
 
 # تغییر کانفیگ سرویس ها
