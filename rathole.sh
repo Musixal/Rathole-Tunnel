@@ -228,6 +228,23 @@ fi
     kharej_service_name="rathole-kharej.service"
     kharej_service_file="/etc/systemd/system/${kharej_service_name}"
     
+    
+# Function to check if a given string is a valid IPv6 address
+check_ipv6() {
+    local ip=$1
+    # Define the IPv6 regex pattern
+    ipv6_pattern="^([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4}|:)$|^(([0-9a-fA-F]{1,4}:){1,7}|:):((:[0-9a-fA-F]{1,4}){1,7}|:)$"
+    # Remove brackets if present
+    ip="${ip#[}"
+    ip="${ip%]}"
+
+    if [[ $ip =~ $ipv6_pattern ]]; then
+        return 0  # Valid IPv6 address
+    else
+        return 1  # Invalid IPv6 address
+    fi
+}
+
 # Function to configure Iran server
 iran_server_configuration() {  
     clear
@@ -275,10 +292,26 @@ while [[ "$transport" != "tcp" && "$transport" != "udp" ]]; do
     fi
 done
 
+echo ''
+local_ip='0.0.0.0'
+
+#Add IPv6 Support
+read -p "Do you want to use IPv6 for connecting? (yes/no): " answer
+echo ''
+if [ "$answer" = "yes" ]; then
+    echo -e "${CYAN}IPv6 selected.${NC}"
+    local_ip='[::]'
+elif [ "$answer" = "no" ]; then
+    echo -e "${CYAN}IPv4 selected.${NC}"
+else
+    echo -e "${YELLOW}Invalid choice. IPv4 selected by default.${NC}"
+fi
+sleep 1
+
     # Generate server configuration file
     cat << EOF > "$iran_config_file"
 [server]
-bind_addr = "0.0.0.0:${tunnel_port}"
+bind_addr = "${local_ip}:${tunnel_port}"
 default_token = "musixal_tunnel"
 heartbeat_interval = 30
 
@@ -292,7 +325,7 @@ EOF
         cat << EOF >> "$iran_config_file"
 [server.services.${port}]
 type = "$transport"
-bind_addr = "0.0.0.0:${port}"
+bind_addr = "${local_ip}:${port}"
 
 EOF
     done
@@ -359,7 +392,7 @@ for ((j=1; j<=$SERVER_NUM; j++)); do
     echo -e "\e[93m═════════════════════════════════════════════\e[0m"  
     echo ''    
     # Read the server address
-    read -p "Enter the IRAN server address: " SERVER_ADDR
+    read -p "Enter the IRAN server address [IPv4/IPv6]: " SERVER_ADDR
 
     echo ''
     # Read the tunnel port
@@ -406,6 +439,15 @@ for ((j=1; j<=$SERVER_NUM; j++)); do
     #this new format allow us to build various client_port.toml 
     local kharej_config_file="${config_dir}/client_p${tunnel_port}.toml"
 
+#Add IPv6 Support
+local_ip='0.0.0.0'
+if check_ipv6 "$SERVER_ADDR"; then
+    local_ip='[::]'
+    # Remove brackets if present
+    SERVER_ADDR="${SERVER_ADDR#[}"
+    SERVER_ADDR="${SERVER_ADDR%]}"
+fi
+
     # Generate server configuration file
     cat << EOF > "$kharej_config_file"
 [client]
@@ -424,7 +466,7 @@ EOF
         cat << EOF >> "$kharej_config_file"
 [client.services.${port}]
 type = "$transport"
-local_addr = "0.0.0.0:${port}"
+local_addr = "${local_ip}:${port}"
 
 EOF
     done
@@ -958,7 +1000,7 @@ display_menu() {
     display_server_info
     display_rathole_core_status
     echo ''
-    echo -e "${GREEN}1. Configure new tunnel${NC}"
+    echo -e "${GREEN}1. Configure new tunnel [IPv4/IPv6]${NC}"
     echo -e "${RED}2. Remove tunnel${NC}"
     echo -e "${CYAN}3. Check tunnel status${NC}"
     echo -e "${YELLOW}4. Restart all services${NC}"
