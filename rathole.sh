@@ -430,12 +430,14 @@ EOF
     done
 
 # Now modify ExecCommand for our service file
-    EXEC_COMMAND+=" ${config_dir}/rathole ${kharej_config_file};"
+    EXEC_COMMAND+="${config_dir}/rathole ${kharej_config_file} & "
     sleep 1
 done
   
 #______________________________________________________________________________End of the loop
     
+    #delete last &
+    EXEC_COMMAND="${EXEC_COMMAND% & }"
     #Need that last '
     EXEC_COMMAND+="'"
     
