@@ -771,7 +771,7 @@ add_cron_job_menu() {
     #add cron job to kill the running rathole processes
     cat << EOF > "$reset_path"
 #! /bin/bash
-pids=\$(pgrep rathole)
+pids=$(pgrep rathole)
 sudo kill -9 $pids
 sudo systemctl daemon-reload
 sudo systemctl restart $service_name
