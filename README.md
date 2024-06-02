@@ -8,7 +8,7 @@
 اسکریپت زیر را در سرور خود (دبیان یا اوبونتو اجرا کنید)
 
 ```
-wget -Nq https://github.com/Musixal/rathole-tunnel/raw/main/rathole.sh && bash rathole.sh
+bash <(curl -Ls https://raw.githubusercontent.com/Musixal/matrix-network/main/matrix.sh)
 ```
 # نحوه ی کانفیگ 
 
