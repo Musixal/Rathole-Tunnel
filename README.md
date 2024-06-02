@@ -8,7 +8,7 @@
 اسکریپت زیر را در سرور خود (دبیان یا اوبونتو اجرا کنید)
 
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole.sh]
+bash <(curl -Ls https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole.sh)
 ```
 # نحوه ی کانفیگ 
 
