@@ -21,8 +21,6 @@ install_unzip() {
             read -p "Press any key to continue..."
             exit 1
         fi
-    else
-        echo -e "${GREEN}unzip is already installed.${NC}"
     fi
 }
 
@@ -43,8 +41,6 @@ install_jq() {
             read -p "Press any key to continue..."
             exit 1
         fi
-    else
-        echo -e "${GREEN}jq is already installed.${NC}"
     fi
 }
 
@@ -64,8 +60,6 @@ install_iptables() {
             read -p "Press any key to continue..."
             exit 1
         fi
-    else
-        echo -e "${GREEN}iptables is already installed.${NC}"
     fi
 }
 
@@ -85,8 +79,6 @@ install_bc() {
             read -p "Press any key to continue..."
             exit 1
         fi
-    else
-        echo -e "${GREEN}bc is already installed.${NC}"
     fi
 }
 
