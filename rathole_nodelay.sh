@@ -21,8 +21,6 @@ install_unzip() {
             read -p "Press any key to continue..."
             exit 1
         fi
-    else
-        echo -e "${GREEN}unzip is already installed.${NC}"
     fi
 }
 
@@ -43,8 +41,6 @@ install_jq() {
             read -p "Press any key to continue..."
             exit 1
         fi
-    else
-        echo -e "${GREEN}jq is already installed.${NC}"
     fi
 }
 
@@ -64,8 +60,6 @@ install_iptables() {
             read -p "Press any key to continue..."
             exit 1
         fi
-    else
-        echo -e "${GREEN}iptables is already installed.${NC}"
     fi
 }
 
@@ -85,8 +79,6 @@ install_bc() {
             read -p "Press any key to continue..."
             exit 1
         fi
-    else
-        echo -e "${GREEN}bc is already installed.${NC}"
     fi
 }
 
@@ -196,7 +188,7 @@ configure_tunnel() {
 
 # check if the rathole-core installed or not
 if [[ ! -d "$config_dir" ]]; then
-    echo -e "\n${RED}Rathole-core directory not found. Install it first through option 7.${NC}\n"
+    echo -e "\n${RED}Rathole-core directory not found. Install it first through option 8.${NC}\n"
     read -p "Press Enter to continue..."
     return 1
 fi
@@ -293,6 +285,17 @@ while [[ "$transport" != "tcp" && "$transport" != "udp" ]]; do
 done
 
 echo ''
+# Initialize nodelay variable
+local nodelay=""
+# Keep prompting the user until a valid input is provided
+while [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; do
+    read -p "TCP No-Delay (true / false): " transport
+    if [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; then
+        echo -e "${RED}Invalid nodelay input. Please enter 'true' or 'false'.${NC}"
+    fi
+done
+
+echo ''
 local_ip='0.0.0.0'
 
 #Add IPv6 Support
@@ -317,6 +320,9 @@ heartbeat_interval = 30
 
 [server.transport]
 type = "tcp"
+
+[server.transport.tcp]
+nodelay = $nodelay
 
 EOF
 
@@ -436,6 +442,17 @@ for ((j=1; j<=$SERVER_NUM; j++)); do
     fi
     done
 
+	echo ''
+	# Initialize nodelay variable
+	local nodelay=""
+	# Keep prompting the user until a valid input is provided
+	while [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; do
+   		read -p "TCP No-Delay (true / false): " transport
+   		if [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; then
+      		  echo -e "${RED}Invalid nodelay input. Please enter 'true' or 'false'.${NC}"
+   		fi
+	done
+
     #this new format allow us to build various client_port.toml 
     local kharej_config_file="${config_dir}/client_p${tunnel_port}.toml"
 
@@ -458,6 +475,9 @@ retry_interval = 1
 
 [client.transport]
 type = "tcp"
+
+[client.transport.tcp]
+nodelay = $nodelay
 
 EOF
 
@@ -772,7 +792,7 @@ add_cron_job_menu() {
     cat << EOF > "$reset_path"
 #! /bin/bash
 pids=\$(pgrep rathole)
-sudo kill -9 $pids
+sudo kill -9 \$pids
 sudo systemctl daemon-reload
 sudo systemctl restart $service_name
 EOF
