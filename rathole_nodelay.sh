@@ -289,7 +289,7 @@ echo ''
 local nodelay=""
 # Keep prompting the user until a valid input is provided
 while [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; do
-    read -p "TCP No-Delay (true / false): " transport
+    read -p "TCP No-Delay (true / false): " nodelay
     if [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; then
         echo -e "${RED}Invalid nodelay input. Please enter 'true' or 'false'.${NC}"
     fi
@@ -447,7 +447,7 @@ for ((j=1; j<=$SERVER_NUM; j++)); do
 	local nodelay=""
 	# Keep prompting the user until a valid input is provided
 	while [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; do
-   		read -p "TCP No-Delay (true / false): " transport
+   		read -p "TCP No-Delay (true / false): " nodelay
    		if [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; then
       		  echo -e "${RED}Invalid nodelay input. Please enter 'true' or 'false'.${NC}"
    		fi
