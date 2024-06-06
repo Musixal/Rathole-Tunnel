@@ -320,8 +320,6 @@ heartbeat_interval = 30
 
 [server.transport]
 type = "tcp"
-keepalive_secs = 20
-keepalive_interval = 8
 
 [server.transport.tcp]
 nodelay = $nodelay
@@ -486,8 +484,6 @@ retry_interval = 1
 
 [client.transport]
 type = "tcp"
-keepalive_secs = 20
-keepalive_interval = 8
 
 [client.transport.tcp]
 nodelay = $nodelay
