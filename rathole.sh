@@ -285,6 +285,17 @@ while [[ "$transport" != "tcp" && "$transport" != "udp" ]]; do
 done
 
 echo ''
+# Initialize nodelay variable
+local nodelay=""
+# Keep prompting the user until a valid input is provided
+while [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; do
+    read -p "TCP No-Delay (true / false): " nodelay
+    if [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; then
+        echo -e "${RED}Invalid nodelay input. Please enter 'true' or 'false'.${NC}"
+    fi
+done
+
+echo ''
 local_ip='0.0.0.0'
 
 #Add IPv6 Support
@@ -309,6 +320,9 @@ heartbeat_interval = 30
 
 [server.transport]
 type = "tcp"
+
+[server.transport.tcp]
+nodelay = $nodelay
 
 EOF
 
@@ -428,6 +442,17 @@ for ((j=1; j<=$SERVER_NUM; j++)); do
     fi
     done
 
+	echo ''
+	# Initialize nodelay variable
+	local nodelay=""
+	# Keep prompting the user until a valid input is provided
+	while [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; do
+   		read -p "TCP No-Delay (true / false): " nodelay
+   		if [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; then
+      		  echo -e "${RED}Invalid nodelay input. Please enter 'true' or 'false'.${NC}"
+   		fi
+	done
+
     #this new format allow us to build various client_port.toml 
     local kharej_config_file="${config_dir}/client_p${tunnel_port}.toml"
 
@@ -450,6 +475,9 @@ retry_interval = 1
 
 [client.transport]
 type = "tcp"
+
+[client.transport.tcp]
+nodelay = $nodelay
 
 EOF
 
