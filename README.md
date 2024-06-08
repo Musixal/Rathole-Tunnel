@@ -131,12 +131,23 @@ bash <(curl -Ls https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/ra
 # منوی اسکریپت
 ![Menu](https://github.com/Musixal/rathole-tunnel/blob/main/menu.jpeg)
 
+
+
+
+    
+
 # کانال تلگرام من
 برای اطلاعات بیشتر کانال زیر را چک کنید:
 
 https://t.me/Gozar_Xray
 
+# حمایت از پروژه
 
+
+   <a href="https://nowpayments.io/donation?api_key=6Z16MRY-AF14Y8T-J24TXVS-00RDKK7&source=lk_donation&medium=referral" target="_blank">
+     <img src="https://nowpayments.io/images/embeds/donation-button-white.svg" alt="Crypto donation button by NOWPayments">
+    </a>
+    
 # سورس کد
 
 https://github.com/rapiz1/rathole
