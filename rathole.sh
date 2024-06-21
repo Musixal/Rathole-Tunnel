@@ -150,7 +150,7 @@ SERVER_COUNTRY=$(curl -sS "http://ip-api.com/json/$SERVER_IP" | jq -r '.country'
 SERVER_ISP=$(curl -sS "http://ip-api.com/json/$SERVER_IP" | jq -r '.isp')
 
 # Function to display ASCII logo
-display_logo() {
+display_logo() {   
     echo -e "${CYAN}"
     cat << "EOF"
                __  .__           .__          
@@ -159,10 +159,15 @@ ____________ _/  |_|  |__   ____ |  |   ____
  |  | \// __ \|  | |   Y  (  <_> |  |_\  ___/ 
  |__|  (____  |__| |___|  /\____/|____/\___  >
             \/          \/                 \/ 	
-               	By: github.com/Musixal v1.3.1 
 EOF
-    echo -e "${NC}"
+    echo -e "${NC}${GREEN}"
+    echo -e "${YELLOW}High-performance reverse tunnel${GREEN}"
+    echo -e "Version: ${YELLOW}v1.3.1${GREEN}"
+    echo -e "Developer: ${YELLOW}Musixal${GREEN}"
+    echo -e "Github: ${YELLOW}github.com/Musixal/Rathole-Tunnel${GREEN}"
+    echo -e "Telegram Channel: ${YELLOW}@Gozar_Xray${NC}"
 }
+
 
 # Function to display server location and IP
 display_server_info() {
