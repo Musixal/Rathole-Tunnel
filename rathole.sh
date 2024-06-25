@@ -1013,6 +1013,7 @@ if [ $? -eq 0 ]; then
     echo -e "${GREEN}New $RATHOLE_SCRIPT has been successfully downloaded to $DEST_DIR.${NC}\n"
     chmod +x "$DEST_DIR/$RATHOLE_SCRIPT"
     echo -e "${CYAN}Please exit the script and type 'rathole' to run it again${NC}\n"
+    echo -e "${CYAN}For removing script just type: 'rm -rf /usr/bin/rathole'${NC}\n"
     read -p "Press any key to continue..."
     exit 0
 else
@@ -1046,7 +1047,7 @@ display_menu() {
     echo -e "6. Port traffic monitoring"
     echo -e "7. Change security token (Advanced)"
  	echo -e "8. Install Rathole core"
- 	echo -e "9. Update script"
+ 	echo -e "9. Install & Update script"
     echo -e "10. Exit"
     echo ''
     echo "-------------------------------"
