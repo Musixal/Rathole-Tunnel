@@ -760,37 +760,41 @@ add_cron_job_menu() {
     # Prompt user to choose a restart time interval
     echo "Select the restart time interval:"
     echo ''
-    echo "1. Every 1 hour"
-    echo "2. Every 2 hours"
-    echo "3. Every 4 hours"
-    echo "4. Every 6 hours"
-    echo "5. Every 12 hours"
-    echo "6. Every 24 hours"
+    echo "1. Every 30th minute"
+    echo "2. Every 1 hour"
+    echo "3. Every 2 hours"
+    echo "4. Every 4 hours"
+    echo "5. Every 6 hours"
+    echo "6. Every 12 hours"
+    echo "7. Every 24 hours"
     echo ''
     read -p "Enter your choice: " time_choice
     echo ''
     # Validate user input for restart time interval
     case $time_choice in
         1)
-            restart_time="0 * * * *"
+            restart_time="*/30 * * * *"
             ;;
         2)
-            restart_time="0 */2 * * *"
+            restart_time="0 * * * *"
             ;;
         3)
-            restart_time="0 */4 * * *"
+            restart_time="0 */2 * * *"
             ;;
         4)
-            restart_time="0 */6 * * *"
+            restart_time="0 */4 * * *"
             ;;
         5)
-            restart_time="0 */12 * * *"
+            restart_time="0 */6 * * *"
             ;;
         6)
+            restart_time="0 */12 * * *"
+            ;;
+        7)
             restart_time="0 0 * * *"
             ;;
         *)
-            echo -e "${RED}Invalid choice. Please enter a number between 1 and 6.${NC}\n"
+            echo -e "${RED}Invalid choice. Please enter a number between 1 and 7.${NC}\n"
             return 1
             ;;
     esac
