@@ -13,7 +13,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/ra
 ورژن دوم (با ورژن قبلی سازگاری ندارد)
 
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole_plus.sh)
 ```
 
 # نحوه ی کانفیگ 
