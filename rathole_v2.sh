@@ -263,7 +263,7 @@ check_port() {
         return 1
     fi
 
-    if ss -tuln | grep ":$PORT" > /dev/null; then
+    if ss -tulnp | grep -E "\b:${PORT}\b" > /dev/null; then
         return 0
     else
         return 1
