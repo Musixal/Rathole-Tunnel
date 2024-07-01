@@ -532,12 +532,8 @@ kharej_server_configuration() {
 	        read -r port
 	
 	        if [[ "$port" =~ ^[0-9]+$ ]] && [ "$port" -gt 22 ] && [ "$port" -le 65535 ]; then
-	            if check_port $port; then
-	                colorize red "Port $port is in use."
-	            else
 	                config_ports+=("$port")
 	                break
-	            fi
 	        else
 	            colorize red "Please enter a valid port number between 23 and 65535"
 	        fi
