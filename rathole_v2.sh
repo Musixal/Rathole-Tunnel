@@ -984,7 +984,7 @@ update_script(){
 # Define the destination path
 DEST_DIR="/usr/bin/"
 RATHOLE_SCRIPT="rathole"
-SCRIPT_URL="https://github.com/Musixal/rathole-tunnel/raw/main/rathole_plus.sh"
+SCRIPT_URL="https://github.com/Musixal/rathole-tunnel/raw/main/rathole_v2.sh"
 
 echo
 # Check if rathole.sh exists in /bin/bash
