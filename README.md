@@ -10,6 +10,12 @@
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole.sh)
 ```
+ورژن دوم (با ورژن قبلی سازگاری ندارد)
+
+```
+bash <(curl -Ls https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole.sh)
+```
+
 # نحوه ی کانفیگ 
 
 
