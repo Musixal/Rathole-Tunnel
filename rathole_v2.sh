@@ -283,8 +283,8 @@ fi
     clear
     colorize cyan "Configurating rathole tunnel menu" bold
     echo
-    colorize green "1) Configure for iran server"
-    colorize magenta "2) Configure for kharej server"
+    colorize green "1) Configure for IRAN server"
+    colorize magenta "2) Configure for KHAREJ server"
     echo
     read -p "Enter your choice: " configure_choice
     case "$configure_choice" in
@@ -304,7 +304,24 @@ service_dir="/etc/systemd/system"
 iran_server_configuration() {  
     clear
     colorize cyan "Configuring IRAN server" bold
+    
     echo
+    
+    #Add IPv6 Support
+	local_ip='0.0.0.0'
+	read -p "[-] Listen for IPv6 address? (y/n): " answer
+	if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
+	    colorize yellow "IPv6 Enabled"
+	    local_ip='[::]'
+	elif [ "$answer" = "n" ]; then
+	    colorize yellow "IPv4 Enabled"
+	    local_ip='0.0.0.0'
+	else
+	    colorize yellow "Invalid choice. IPv4 enabled by default."
+	    local_ip='0.0.0.0'
+	fi
+
+	echo 
 	
 	while true; do
 	    echo -ne "[*] Tunnel port: "
@@ -320,61 +337,6 @@ iran_server_configuration() {
 	        colorize red "Please enter a valid port number between 23 and 65535"
 	    fi
 	done
-
-    
-    echo
-    
-	# Read the number of config ports and read each port
-	while true; do
-	    echo -ne "[*] Number of your configs: "
-	    read -r num_ports
-	
-	    if [[ "$num_ports" =~ ^[0-9]+$ ]] && [ "$num_ports" -gt 0 ] && [ "$num_ports" -lt 100 ]; then
-	        break
-	    else
-	        colorize red "Please enter a valid number greater than 0 and lower than 100"
-	    fi
-	done
-    
-    
-    echo
-    
-	# Read each config port
-	config_ports=()
-	for ((i=1; i<=$num_ports; i++)); do
-	    while true; do
-	        echo -ne "[*] Enter port for config $i: "
-	        read -r port
-	
-	        if [[ "$port" =~ ^[0-9]+$ ]] && [ "$port" -gt 22 ] && [ "$port" -le 65535 ]; then
-	            if check_port $port; then
-	                colorize red "Port $port is in use."
-	            else
-	                config_ports+=("$port")
-	                break
-	            fi
-	        else
-	            colorize red "Please enter a valid port number between 23 and 65535"
-	        fi
-	    done
-	done
-
-
-	echo
-	
-	# Initialize transport variable
-	local transport=""
-	# Keep prompting the user until a valid input is provided
-	while [[ "$transport" != "tcp" && "$transport" != "udp" ]]; do
-	    # Prompt the user to input transport type
-	    echo -ne "[*] Transport type (tcp/udp): " 
-	    read -r transport
-	
-	    # Check if the input is either tcp or udp
-	    if [[ "$transport" != "tcp" && "$transport" != "udp" ]]; then
-	        colorize red "Invalid transport type. Please enter 'tcp' or 'udp'"
-	    fi
-	done
 	
 	echo
 	
@@ -388,7 +350,23 @@ iran_server_configuration() {
 	        colorize red "Invalid nodelay input. Please enter 'true' or 'false'"
 	    fi
 	done
-
+    
+    echo
+    
+    # Initialize transport variable
+	local transport=""
+	# Keep prompting the user until a valid input is provided
+	while [[ "$transport" != "tcp" && "$transport" != "udp" ]]; do
+	    # Prompt the user to input transport type
+	    echo -ne "[*] Transport type(tcp/udp): " 
+	    read -r transport
+	
+	    # Check if the input is either tcp or udp
+	    if [[ "$transport" != "tcp" && "$transport" != "udp" ]]; then
+	        colorize red "Invalid transport type. Please enter 'tcp' or 'udp'"
+	    fi
+	done
+	
 	echo 
 
 	echo -ne "[-] Security Token (press enter to use default value): "
@@ -396,27 +374,37 @@ iran_server_configuration() {
 	if [[ -z "$token" ]]; then
 		token="musixal"
 	fi
-		
-	echo
 
-	#Add IPv6 Support
-	local_ip='0.0.0.0'
-	read -p "[-] Listen for IPv6 address? (y/n): " answer
-	echo
-	if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
-	    colorize yellow "IPv6 Enabled"
-	    local_ip='[::]'
-	elif [ "$answer" = "n" ]; then
-	    colorize yellow "IPv4 Enabled"
-	    local_ip='0.0.0.0'
-	else
-	    colorize yellow "Invalid choice. IPv4 enabled by default."
-	    local_ip='0.0.0.0'
+	echo 
+	
+	# Prompt for Ports
+	echo -ne "[*] Enter your ports separated by commas (e.g. 2070,2080): "
+	read -r input_ports
+	input_ports=$(echo "$input_ports" | tr -d ' ')
+	# Convert the input into an array, splitting by comma
+	IFS=',' read -r -a ports <<< "$input_ports"
+	# Iterate through each port and perform an action
+	for port in "${ports[@]}"; do
+		if [[ "$port" =~ ^[0-9]+$ ]] && [ "$port" -gt 22 ] && [ "$port" -le 65535 ]; then
+			if check_port $port; then
+			    colorize red "Port $port is in use."
+			else
+				colorize green "Port $port added to your configs"
+			    config_ports+=("$port")
+			fi
+		else
+			colorize red "Port $port is Invalid. Please enter a valid port number between 23 and 65535"
+		fi
+	  
+	done
+	
+	if [ ${#config_ports[@]} -eq 0 ]; then
+		colorize red "No ports were entered. Exiting." bold
+		sleep 2
+		return 1
 	fi
-
-
-
-
+	
+	
     # Generate server configuration file
     cat << EOF > "${config_dir}/iran${tunnel_port}.toml"
 [server]
@@ -479,6 +467,7 @@ EOF
 kharej_server_configuration() {
     clear
     colorize cyan "Configuring kharej server" bold 
+    
     echo
  
 	# Prompt for IRAN server IP address
@@ -513,36 +502,19 @@ kharej_server_configuration() {
     
     echo
     
-    # Read the number of config ports and read each port
-    echo -ne "[*] Number of your configs: " 
-    read -r num_ports
-    while ! [[ "$num_ports" =~ ^[0-9]+$ ]]; do
-        colorize red "Please enter a valid number."
-	    echo -ne "[*] Number of your configs: " 
-	    read -r num_ports
-    done
-    
-    echo
-    
-	# Read each config port
-	config_ports=()
-	for ((i=1; i<=$num_ports; i++)); do
-	    while true; do
-	        echo -ne "[*] Enter port for config $i: "
-	        read -r port
-	
-	        if [[ "$port" =~ ^[0-9]+$ ]] && [ "$port" -gt 22 ] && [ "$port" -le 65535 ]; then
-	                config_ports+=("$port")
-	                break
-	        else
-	            colorize red "Please enter a valid port number between 23 and 65535"
-	        fi
-	    done
+	# Initialize nodelay variable
+	local nodelay=""
+	# Keep prompting the user until a valid input is provided
+	while [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; do
+	    echo -ne "[*] TCP_NODELAY (true/false): " 
+	    read -r nodelay
+	    if [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; then
+	        colorize red "Invalid nodelay input. Please enter 'true' or 'false'"
+	    fi
 	done
 
+	echo
 
-    echo
-    
     # Initialize transport variable
     local transport=""
 
@@ -559,25 +531,44 @@ kharej_server_configuration() {
 	done
 
 	echo
-	
-	# Initialize nodelay variable
-	local nodelay=""
-	# Keep prompting the user until a valid input is provided
-	while [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; do
-	    echo -ne "[*] TCP_NODELAY (true/false): " 
-	    read -r nodelay
-	    if [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; then
-	        colorize red "Invalid nodelay input. Please enter 'true' or 'false'"
-	    fi
-	done
 
-	echo
 	echo -ne "[-] Security Token (press enter to use default value): "
 	read -r token
 	if [[ -z "$token" ]]; then
 		token="musixal"
 	fi
 
+	echo
+	
+		
+	# Prompt for Ports
+	echo -ne "[*] Enter your ports separated by commas (e.g. 2070,2080): "
+	read -r input_ports
+	input_ports=$(echo "$input_ports" | tr -d ' ')
+	# Convert the input into an array, splitting by comma
+	IFS=',' read -r -a ports <<< "$input_ports"
+	# Iterate through each port and perform an action
+	for port in "${ports[@]}"; do
+		if [[ "$port" =~ ^[0-9]+$ ]] && [ "$port" -gt 22 ] && [ "$port" -le 65535 ]; then
+			if check_port $port; then
+			    colorize red "Port $port is in use."
+			else
+				colorize green "Port $port added to your configs"
+			    config_ports+=("$port")
+			fi
+		else
+			colorize red "Port $port is Invalid. Please enter a valid port number between 23 and 65535"
+		fi
+	  
+	done
+	
+	if [ ${#config_ports[@]} -eq 0 ]; then
+		colorize red "No ports were entered. Exiting." bold
+		sleep 2
+		return 1
+	fi
+	
+	
 	#Add IPv6 Support
 	local_ip='0.0.0.0'
 	if check_ipv6 "$SERVER_ADDR"; then
