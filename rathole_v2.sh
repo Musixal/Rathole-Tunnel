@@ -550,12 +550,8 @@ kharej_server_configuration() {
 	# Iterate through each port and perform an action
 	for port in "${ports[@]}"; do
 		if [[ "$port" =~ ^[0-9]+$ ]] && [ "$port" -gt 22 ] && [ "$port" -le 65535 ]; then
-			if check_port $port; then
-			    colorize red "Port $port is in use."
-			else
-				colorize green "Port $port added to your configs"
-			    config_ports+=("$port")
-			fi
+			colorize green "Port $port added to your configs"
+		    config_ports+=("$port")
 		else
 			colorize red "Port $port is Invalid. Please enter a valid port number between 23 and 65535"
 		fi
