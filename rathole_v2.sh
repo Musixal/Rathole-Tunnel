@@ -263,7 +263,7 @@ check_port() {
         return 1
     fi
 
-    if ss -tulnp | grep -E "\b:${PORT}\b" > /dev/null; then
+    if lsof -i -P -n | grep LISTEN | awk '{print $9}' | awk -F':' '{print $NF}' | grep $PORT > /dev/null; then
         return 0
     else
         return 1
@@ -387,13 +387,13 @@ iran_server_configuration() {
 	for port in "${ports[@]}"; do
 		if [[ "$port" =~ ^[0-9]+$ ]] && [ "$port" -gt 22 ] && [ "$port" -le 65535 ]; then
 			if check_port $port; then
-			    colorize red "Port $port is in use."
+			    colorize red "[ERROR] Port $port is in use."
 			else
-				colorize green "Port $port added to your configs"
+				colorize green "[INFO] Port $port added to your configs"
 			    config_ports+=("$port")
 			fi
 		else
-			colorize red "Port $port is Invalid. Please enter a valid port number between 23 and 65535"
+			colorize red "[ERROR] Port $port is Invalid. Please enter a valid port number between 23 and 65535"
 		fi
 	  
 	done
@@ -550,10 +550,13 @@ kharej_server_configuration() {
 	# Iterate through each port and perform an action
 	for port in "${ports[@]}"; do
 		if [[ "$port" =~ ^[0-9]+$ ]] && [ "$port" -gt 22 ] && [ "$port" -le 65535 ]; then
-			colorize green "Port $port added to your configs"
+			if ! check_port $port; then
+			    colorize yellow "[INFO] Port $port is not LISTEN. Forwarding to idle port error occured."
+			fi
+			colorize green "[INFO] Port $port added to your configs"
 		    config_ports+=("$port")
 		else
-			colorize red "Port $port is Invalid. Please enter a valid port number between 23 and 65535"
+			colorize red "[ERROR] Port $port is Invalid. Please enter a valid port number between 23 and 65535"
 		fi
 	  
 	done
