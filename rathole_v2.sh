@@ -263,7 +263,7 @@ check_port() {
         return 1
     fi
 
-    if lsof -i -P -n | grep LISTEN | awk '{print $9}' | awk -F':' '{print $NF}' | grep $PORT > /dev/null; then
+    if lsof -i -P -n | grep LISTEN | awk '{print $9}' | awk -F':' '{print $NF}' | grep -w $PORT > /dev/null; then
         return 0
     else
         return 1
