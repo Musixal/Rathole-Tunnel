@@ -10,7 +10,7 @@
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole.sh)
 ```
-ورژن دوم (با ورژن قبلی سازگاری ندارد)
+ورژن دوم (با ورژن قبلی سازگاری ندارد / پیشنهادی / قابلیت مالتی سرویس و مالتی سرور)
 
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole_v2.sh)
