@@ -775,6 +775,7 @@ tunnel_management() {
 	colorize green "3) Add a new config for this tunnel"
 	colorize reset "4) Add a cronjob for this tunnel"
 	colorize reset "5) Remove existing cronjob for this tunnel"
+	colorize reset "6) view logs"
 	echo 
 	read -p "Enter your choice (0 to return): " choice
 	
@@ -784,6 +785,7 @@ tunnel_management() {
         3) add_new_config "$selected_config" ;;
         4) add_cron_job_menu "$service_name";;
         5) delete_cron_job "$service_name";;
+        6) view_service_logs "$service_name" ;;
         0) return 1 ;;
         *) echo -e "${RED}Invalid option!${NC}" && sleep 1 && return 1;;
     esac
@@ -970,6 +972,11 @@ EOF
     sleep 2
 }
 
+view_service_logs (){
+	clear
+	journalctl -eu "$1"
+
+}
 update_script(){
 # Define the destination path
 DEST_DIR="/usr/bin/"
