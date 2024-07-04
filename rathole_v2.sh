@@ -195,13 +195,13 @@ download_and_extract_rathole() {
 download_and_extract_rathole
 
 # Get server IP
-SERVER_IP=$(hostname -I | awk '{print $1}')
+#SERVER_IP=$(hostname -I | awk '{print $1}')
 
-# Fetch server country using ip-api.com
-SERVER_COUNTRY=$(curl -sS "http://ip-api.com/json/$SERVER_IP" | jq -r '.country')
+# Fetch server country
+SERVER_COUNTRY=$(curl -sS "http://ipwhois.app/json/$SERVER_IP" | jq -r '.country')
 
-# Fetch server isp using ip-api.com 
-SERVER_ISP=$(curl -sS "http://ip-api.com/json/$SERVER_IP" | jq -r '.isp')
+# Fetch server isp 
+SERVER_ISP=$(curl -sS "http://ipwhois.app/json/$SERVER_IP" | jq -r '.isp')
 
 # Function to display ASCII logo
 # Function to display ASCII logo
@@ -224,9 +224,10 @@ EOF
 # Function to display server location and IP
 display_server_info() {
     echo -e "\e[93m═════════════════════════════════════════════\e[0m"  
-    echo -e "${CYAN}Server Country:${NC} $SERVER_COUNTRY"
-    echo -e "${CYAN}Server IP:${NC} $SERVER_IP"
-    echo -e "${CYAN}Server ISP:${NC} $SERVER_ISP"
+ 	#	Hidden for security issues   
+    #echo -e "${CYAN}IP Address:${NC} $SERVER_IP"
+    echo -e "${CYAN}Location:${NC} $SERVER_COUNTRY "
+    echo -e "${CYAN}Datacenter:${NC} $SERVER_ISP"
 }
 
 # Function to display Rathole Core installation status
@@ -1427,9 +1428,9 @@ display_menu() {
     display_server_info
     display_rathole_core_status
     echo
-    colorize green " 1. Configure a new tunnel [IPv4/IPv6]"
-    colorize red " 2. Tunnel management menu"
-    colorize cyan " 3. Check tunnels status"
+    colorize green " 1. Configure a new tunnel [IPv4/IPv6]" bold
+    colorize red " 2. Tunnel management menu" bold
+    colorize cyan " 3. Check tunnels status" bold
  	echo -e " 4. Optimize Network & System Limits"
  	echo -e " 5. Install Rathole core"
  	echo -e " 6. Install & Update script"
