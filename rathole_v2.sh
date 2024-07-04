@@ -776,7 +776,7 @@ tunnel_management() {
 	colorize green "3) Add a new config for this tunnel"
 	colorize reset "4) Add a cronjob for this tunnel"
 	colorize reset "5) Remove existing cronjob for this tunnel"
-	colorize reset "6) view logs"
+	colorize reset "6) View logs"
 	echo 
 	read -p "Enter your choice (0 to return): " choice
 	
