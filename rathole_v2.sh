@@ -258,17 +258,29 @@ check_ipv6() {
 
 check_port() {
     local PORT=$1
-
+	local TRANSPORT=$2
+	
     if [ -z "$PORT" ]; then
-        echo "Usage: check_port <port>"
+        echo "Usage: check_port <port> <transport>"
         return 1
     fi
-
-    if lsof -i -P -n | grep LISTEN | awk '{print $9}' | awk -F':' '{print $NF}' | grep -w $PORT > /dev/null; then
-        return 0
-    else
-        return 1
-    fi
+    
+	if [[ "$TRANSPORT" == "tcp" ]]; then
+		if ss -tlnp "sport = :$PORT" | grep "$PORT" > /dev/null; then
+			return 0
+		else
+			return 1
+		fi
+	elif [[ "$TRANSPORT" == "udp" ]]; then
+		if ss -ulnp "sport = :$PORT" | grep "$PORT" > /dev/null; then
+			return 0
+		else
+			return 1
+		fi
+	else
+		return 1
+   	fi
+   	
 }
 
 # Function for configuring tunnel
@@ -329,7 +341,7 @@ iran_server_configuration() {
 	    read -r tunnel_port
 	
 	    if [[ "$tunnel_port" =~ ^[0-9]+$ ]] && [ "$tunnel_port" -gt 22 ] && [ "$tunnel_port" -le 65535 ]; then
-	        if check_port $tunnel_port; then
+	        if check_port "$tunnel_port" "tcp"; then
 	            colorize red "Port $tunnel_port is in use."
 	        else
 	            break
@@ -384,10 +396,11 @@ iran_server_configuration() {
 	input_ports=$(echo "$input_ports" | tr -d ' ')
 	# Convert the input into an array, splitting by comma
 	IFS=',' read -r -a ports <<< "$input_ports"
+	declare -a config_ports
 	# Iterate through each port and perform an action
 	for port in "${ports[@]}"; do
 		if [[ "$port" =~ ^[0-9]+$ ]] && [ "$port" -gt 22 ] && [ "$port" -le 65535 ]; then
-			if check_port $port; then
+			if check_port "$port" "$transport"; then
 			    colorize red "[ERROR] Port $port is in use."
 			else
 				colorize green "[INFO] Port $port added to your configs"
@@ -398,7 +411,7 @@ iran_server_configuration() {
 		fi
 	  
 	done
-	
+
 	if [ ${#config_ports[@]} -eq 0 ]; then
 		colorize red "No ports were entered. Exiting." bold
 		sleep 2
@@ -464,7 +477,7 @@ EOF
     colorize green "IRAN server configuration completed successfully."
 }
 
-# Function for configuring Kharej server
+#Function for configuring Kharej server
 kharej_server_configuration() {
     clear
     colorize cyan "Configuring kharej server" bold 
@@ -491,11 +504,7 @@ kharej_server_configuration() {
 	    read -r tunnel_port
 	
 	    if [[ "$tunnel_port" =~ ^[0-9]+$ ]] && [ "$tunnel_port" -gt 22 ] && [ "$tunnel_port" -le 65535 ]; then
-	        if check_port $tunnel_port; then
-	            colorize red "Port $tunnel_port is in use."
-	        else
-	            break
-	        fi
+	       	break
 	    else
 	        colorize red "Please enter a valid port number between 23 and 65535"
 	    fi
@@ -546,13 +555,14 @@ kharej_server_configuration() {
 	echo -ne "[*] Enter your ports separated by commas (e.g. 2070,2080): "
 	read -r input_ports
 	input_ports=$(echo "$input_ports" | tr -d ' ')
+	declare -a config_ports
 	# Convert the input into an array, splitting by comma
 	IFS=',' read -r -a ports <<< "$input_ports"
 	# Iterate through each port and perform an action
 	for port in "${ports[@]}"; do
 		if [[ "$port" =~ ^[0-9]+$ ]] && [ "$port" -gt 22 ] && [ "$port" -le 65535 ]; then
-			if ! check_port $port; then
-			    colorize yellow "[INFO] Port $port is not LISTEN. Forwarding to idle port error occured."
+			if ! check_port "$port" "$transport" ; then
+			    colorize yellow "[INFO] Port $port is not in LISTENING state."
 			fi
 			colorize green "[INFO] Port $port added to your configs"
 		    config_ports+=("$port")
@@ -562,6 +572,7 @@ kharej_server_configuration() {
 	  
 	done
 	
+
 	if [ ${#config_ports[@]} -eq 0 ]; then
 		colorize red "No ports were entered. Exiting." bold
 		sleep 2
@@ -840,7 +851,8 @@ destroy_tunnel(){
         echo -e "${RED}Failed to reload systemd daemon. Please check your system configuration.${NC}"
     fi
     
-    echo -e "${GREEN}Tunnel destroyed successfully!${NC}\n"
+    echo -e "${GREEN}Tunnel destroyed successfully! ${NC}"
+    echo
     sleep 1
 
 }
