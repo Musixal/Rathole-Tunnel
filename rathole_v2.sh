@@ -117,45 +117,6 @@ install_jq() {
 # Install jq
 install_jq
 
-install_iptables() {
-    if ! command -v iptables &> /dev/null; then
-        # Check if the system is using apt package manager
-        if command -v apt-get &> /dev/null; then
-            echo -e "${RED}iptables is not installed. Installing...${NC}"
-            sleep 1
-            sudo apt-get update
-            sudo apt-get install -y iptables
-        else
-            echo -e "${RED}Error: Unsupported package manager. Please install iptables manually.${NC}\n"
-            press_key
-            exit 1
-        fi
-    fi
-}
-
-# Install iptables
-install_iptables
-
-install_bc() {
-    if ! command -v bc &> /dev/null; then
-        # Check if the system is using apt package manager
-        if command -v apt-get &> /dev/null; then
-            echo -e "${RED}bc is not installed. Installing...${NC}"
-            sleep 1
-            sudo apt-get update
-            sudo apt-get install -y bc
-        else
-            echo -e "${RED}Error: Unsupported package manager. Please install bc manually.${NC}\n"
-            press_key
-            exit 1
-        fi
-    fi
-}
-
-# Install bc
-install_bc
-
-
 config_dir="/root/rathole-core"
 # Function to download and extract Rathole Core
 download_and_extract_rathole() {
