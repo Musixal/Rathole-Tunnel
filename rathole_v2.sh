@@ -74,9 +74,28 @@ install_unzip() {
         fi
     fi
 }
-
 # Install unzip
 install_unzip
+
+#Function to install cron if not already installed
+install_cron() {
+    if ! command -v cron &> /dev/null; then
+        # Check if the system is using apt package manager
+        if command -v apt-get &> /dev/null; then
+            echo -e "${RED}cron is not installed. Installing...${NC}"
+            sleep 1
+            sudo apt-get update
+            sudo apt-get install -y cron
+        else
+            echo -e "${RED}Error: Unsupported package manager. Please install cron manually.${NC}\n"
+            press_key
+            exit 1
+        fi
+    fi
+}
+
+# Install cron
+install_cron
 
 # Function to install jq if not already installed
 install_jq() {
