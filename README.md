@@ -8,12 +8,12 @@
 اسکریپت زیر را در سرور خود (دبیان یا اوبونتو اجرا کنید)
 
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole.sh)
+bash <(curl -Ls --ipv4 https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole.sh)
 ```
 ورژن دوم (با ورژن قبلی سازگاری ندارد / پیشنهادی / قابلیت مالتی سرویس و مالتی سرور)
 
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole_v2.sh)
+bash <(curl -Ls --ipv4 https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole_v2.sh)
 ```
 
 # نحوه ی کانفیگ 
