@@ -274,10 +274,12 @@ if [[ ! -d "$config_dir" ]]; then
 fi
 
     clear
-    colorize cyan "Configurating rathole tunnel menu" bold
+    colorize green "Essential tips:" bold
+    colorize yellow "   Enable TCP_NODELAY to improve the latency but decrease the bandwidth.
+   For the high number of connections, I recommend turning off the Heartbeat option" 
     echo
-    colorize green "1) Configure for IRAN server"
-    colorize magenta "2) Configure for KHAREJ server"
+    colorize green "1) Configure for IRAN server" bold
+    colorize magenta "2) Configure for KHAREJ server" bold
     echo
     read -p "Enter your choice: " configure_choice
     case "$configure_choice" in
@@ -337,13 +339,31 @@ iran_server_configuration() {
 	local nodelay=""
 	# Keep prompting the user until a valid input is provided
 	while [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; do
-	    echo -ne "[*] TCP_NODELAY (true/false): " 
+	    echo -ne "[*] Enable TCP_NODELAY (true/false): " 
 	    read -r nodelay
 	    if [[ "$nodelay" != "true" && "$nodelay" != "false" ]]; then
-	        colorize red "Invalid nodelay input. Please enter 'true' or 'false'"
+	        colorize red "Invalid TCP_NODELAY value. Please enter 'true' or 'false'"
 	    fi
 	done
     
+    echo
+    
+    # Initialize HEARTBEAT variable
+	local HEARTBEAT=""
+	# Keep prompting the user until a valid input is provided
+	while [[ "$HEARTBEAT" != "true" && "$HEARTBEAT" != "false" ]]; do
+	    echo -ne "[*] Enable HEARTBEAT (true/false): " 
+	    read -r HEARTBEAT
+	    if [[ "$HEARTBEAT" != "true" && "$HEARTBEAT" != "false" ]]; then
+	        colorize red "Invalid HEARTBEAT value. Please enter 'true' or 'false'"
+	    fi
+	done
+    
+    if [[ "$HEARTBEAT" == "true" ]]; then
+    	HEARTBEAT="30"
+    else
+    	HEARTBEAT="0"
+    fi
     echo
     
     # Initialize transport variable
@@ -404,7 +424,7 @@ iran_server_configuration() {
 [server]
 bind_addr = "${local_ip}:${tunnel_port}"
 default_token = "$token"
-heartbeat_interval = 30
+heartbeat_interval = $HEARTBEAT
 
 [server.transport]
 type = "tcp"
@@ -504,6 +524,25 @@ kharej_server_configuration() {
 	done
 
 	echo
+	
+	# Initialize HEARTBEAT variable
+	local HEARTBEAT=""
+	# Keep prompting the user until a valid input is provided
+	while [[ "$HEARTBEAT" != "true" && "$HEARTBEAT" != "false" ]]; do
+	    echo -ne "[*] Enable HEARTBEAT (true/false): " 
+	    read -r HEARTBEAT
+	    if [[ "$HEARTBEAT" != "true" && "$HEARTBEAT" != "false" ]]; then
+	        colorize red "Invalid HEARTBEAT value. Please enter 'true' or 'false'"
+	    fi
+	done
+    
+    if [[ "$HEARTBEAT" == "true" ]]; then
+    	HEARTBEAT="40"
+    else
+    	HEARTBEAT="0"
+    fi
+    
+    echo
 
     # Initialize transport variable
     local transport=""
@@ -574,7 +613,7 @@ kharej_server_configuration() {
 [client]
 remote_addr = "${SERVER_ADDR}:${tunnel_port}"
 default_token = "$token"
-heartbeat_timeout = 40
+heartbeat_timeout = $HEARTBEAT
 retry_interval = 1
 
 [client.transport]
@@ -793,7 +832,7 @@ destroy_tunnel(){
     service_path="$service_dir/$service_name"
     
 	# Prompt to confirm before removing Rathole-core directory
-    echo -ne "${YELLOW}Do you want to remove Rathole-core? (y/n)${NC}: " 
+    echo -ne "${YELLOW}Do you want to remove Rathole-core? (y/n) [no by default]${NC}: " 
     read -r confirm
 	echo     
 	if [[ $confirm == [yY] ]]; then
