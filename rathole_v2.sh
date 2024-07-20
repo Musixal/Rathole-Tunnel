@@ -928,9 +928,97 @@ delete_cron_job() {
 
 add_new_config(){
     echo
-    colorize yellow "Under construction..." bold
-    sleep 1
+    
+    local config_path="$1"
+    
+    #Add IPv6 Support
+	local_ip='0.0.0.0'
+	read -p "[-] Listen for IPv6 address? (y/n): " answer
+	if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
+	    colorize yellow "IPv6 Enabled"
+	    local_ip='[::]'
+	elif [ "$answer" = "n" ]; then
+	    colorize yellow "IPv4 Enabled"
+	    local_ip='0.0.0.0'
+	else
+	    colorize yellow "Invalid choice. IPv4 enabled by default."
+	    local_ip='0.0.0.0'
+	fi
+	
+	echo 
+	
+    # Initialize transport variable
+	local transport=""
+	# Keep prompting the user until a valid input is provided
+	while [[ "$transport" != "tcp" && "$transport" != "udp" ]]; do
+	    # Prompt the user to input transport type
+	    echo -ne "[*] Transport type(tcp/udp): " 
+	    read -r transport
+	
+	    # Check if the input is either tcp or udp
+	    if [[ "$transport" != "tcp" && "$transport" != "udp" ]]; then
+	        colorize red "Invalid transport type. Please enter 'tcp' or 'udp'"
+	    fi
+	done
+	
+	echo
+	
+    # Prompt for Ports
+	echo -ne "[*] Enter your ports separated by commas (e.g. 2070,2080): "
+	read -r input_ports
+	input_ports=$(echo "$input_ports" | tr -d ' ')
+	# Convert the input into an array, splitting by comma
+	IFS=',' read -r -a ports <<< "$input_ports"
+	declare -a config_ports
+	# Iterate through each port and perform an action
+	for port in "${ports[@]}"; do
+		if [[ "$port" =~ ^[0-9]+$ ]] && [ "$port" -gt 22 ] && [ "$port" -le 65535 ]; then
+			    config_ports+=("$port")
+		else
+			colorize red "[ERROR] Port $port is Invalid. Please enter a valid port number between 23 and 65535"
+		fi
+	  
+	done
 
+	if [ ${#config_ports[@]} -eq 0 ]; then
+		colorize red "No ports were entered. Exiting." bold
+		sleep 2
+		return 1
+	fi
+	
+	echo
+	
+	if grep -q "iran" <<< "$config_path"; then
+	# Add each config port to the configuration file
+    for port in "${config_ports[@]}"; do
+        cat << EOF >> "$config_path"
+[server.services.${port}]
+type = "$transport"
+bind_addr = "${local_ip}:${port}"
+
+EOF
+    done
+    
+    else   
+    # Add each config port to the configuration file
+    for port in "${config_ports[@]}"; do
+        cat << EOF >> "$config_path"
+[client.services.${port}]
+type = "$transport"
+local_addr = "${local_ip}:${port}"
+
+EOF
+    done
+    
+    fi
+        
+    colorize green "All ports added to your config successfully" done
+    sleep 1
+    
+    config_name=$(basename "${config_path%.toml}")
+	service_name="rathole-${config_name}.service"
+	restart_service "$service_name" 
+	
 }
 
 add_cron_job_menu() {
