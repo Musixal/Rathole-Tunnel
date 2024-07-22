@@ -135,7 +135,7 @@ bash <(curl -Ls --ipv4 https://raw.githubusercontent.com/Musixal/rathole-tunnel/
 5️⃣ در نهایت اگر هیچکدوم جواب نداد سرورتون رو ریبیلد کنید. 
 
 # منوی اسکریپت
-![Menu](https://github.com/Musixal/rathole-tunnel/blob/main/menu.jpeg)
+![Menu](https://github.com/Musixal/rathole-tunnel/blob/main/menu_v2.png)
 
 
 
