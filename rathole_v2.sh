@@ -212,7 +212,7 @@ display_server_info() {
 
 # Function to display Rathole Core installation status
 display_rathole_core_status() {
-    if [[ -d "$config_dir" ]]; then
+    if [[ -f "${config_dir}/rathole" ]]; then
         echo -e "${CYAN}Rathole Core:${NC} ${GREEN}Installed${NC}"
     else
         echo -e "${CYAN}Rathole Core:${NC} ${RED}Not installed${NC}"
@@ -1531,6 +1531,62 @@ read -p "Press Enter to continue..."
 }
 
 
+install_modified_core(){
+	echo
+	DOWNLOAD_URL='https://github.com/Musixal/rathole-tunnel/raw/main/core/rathole_modified.zip'
+	
+	if [ -z "$DOWNLOAD_URL" ]; then
+        echo -e "${RED}Failed to retrieve download URL.${NC}"
+        sleep 1
+        return 1
+    fi
+    
+    DOWNLOAD_DIR=$(mktemp -d)
+    echo -e "Downloading modifed rathole-core from $DOWNLOAD_URL...\n"
+    sleep 1
+    curl -sSL -o "$DOWNLOAD_DIR/rathole_modified.zip" "$DOWNLOAD_URL"
+    echo -e "Extracting Rathole...\n"
+    sleep 1
+    unzip -q "$DOWNLOAD_DIR/rathole_modified.zip" -d "$config_dir"
+    mv -f ${config_dir}/rathole_modified ${config_dir}/rathole
+    echo -e "${GREEN}Rathole installation completed.${NC}"
+    chmod u+x ${config_dir}/rathole
+    rm -rf "$DOWNLOAD_DIR"
+    echo
+}
+
+change_core(){
+	echo
+	ARCH=$(uname -m)
+	if ! [[ "$ARCH" == "x86_64" ]]; then
+    	colorize red "Only x86_64 arch. is supported right now!" bold
+    	sleep 2
+    	return 1
+    fi
+	 	
+	colorize cyan "Select your rathole-core:" bold
+	echo
+	colorize green "1) Default Core"
+	colorize yellow "2) Modified Core (Lower connections, maybe higher latency)"
+	colorize reset "3) return "
+	echo
+	read -p "Enter your choice [1-3]: " choice
+
+	case $choice in
+        1) rm -f "${config_dir}/rathole" &> /dev/null 
+        download_and_extract_rathole ;;
+        2) rm -f "${config_dir}/rathole" &> /dev/null 
+        install_modified_core;;
+        3) return 1 ;;
+        *) echo -e "${RED} Invalid option!${NC}" && sleep 1 && return 1 ;;
+    esac
+	
+	colorize red "IMPORTANT!" bold
+	colorize yellow "To load the new core, restart all services." bold
+	echo
+	press_key
+
+}
 
 # Color codes
 RED='\033[0;31m'
@@ -1553,6 +1609,7 @@ display_menu() {
  	echo -e " 4. Optimize Network & System Limits"
  	echo -e " 5. Install Rathole core"
  	echo -e " 6. Install & Update script"
+ 	echo -e " 7. Change Core [experimental]"
     echo -e " 0. Exit"
     echo
     echo "-------------------------------"
@@ -1560,7 +1617,7 @@ display_menu() {
 
 # Function to read user input
 read_option() {
-    read -p "Enter your choice [0-6]: " choice
+    read -p "Enter your choice [0-7]: " choice
     case $choice in
         1) configure_tunnel ;;
         2) tunnel_management ;;
@@ -1568,6 +1625,7 @@ read_option() {
         4) hawshemi_script ;;
         5) download_and_extract_rathole "sleep";;
         6) update_script ;;
+        7) change_core ;;
         0) exit 0 ;;
         *) echo -e "${RED} Invalid option!${NC}" && sleep 1 ;;
     esac
