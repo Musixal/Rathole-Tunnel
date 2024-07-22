@@ -121,7 +121,7 @@ config_dir="/root/rathole-core"
 # Function to download and extract Rathole Core
 download_and_extract_rathole() {
     # check if core installed already
-    if [[ -d "$config_dir" ]]; then
+    if [[ -f "${config_dir}/rathole" ]]; then
         if [[ "$1" == "sleep" ]]; then
         	echo 
             colorize green "Rathole Core is already installed." bold
@@ -150,7 +150,7 @@ download_and_extract_rathole() {
         exit 1
     fi
     if [[ "$ARCH" == "x86_64" ]]; then
-    	DOWNLOAD_URL='https://github.com/Musixal/rathole-tunnel/raw/main/rathole.zip'
+    	DOWNLOAD_URL='https://github.com/Musixal/rathole-tunnel/raw/main/core/rathole.zip'
     fi
 
     if [ -z "$DOWNLOAD_URL" ]; then
