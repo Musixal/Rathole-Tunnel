@@ -1138,16 +1138,16 @@ else
 fi
 echo
 # Download the new rathole.sh from the GitHub URL
-echo -e "${CYAN}Downloading the new $RATHOLE_SCRIPT from $SCRIPT_URL...${NC}"
+#echo -e "${CYAN}Downloading the new $RATHOLE_SCRIPT from $SCRIPT_URL...${NC}"
 
 curl -s -L -o "$DEST_DIR/$RATHOLE_SCRIPT" "$SCRIPT_URL"
 
 echo
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN}New $RATHOLE_SCRIPT has been successfully downloaded to $DEST_DIR.${NC}\n"
+    #echo -e "${GREEN}New $RATHOLE_SCRIPT has been successfully downloaded to $DEST_DIR.${NC}\n"
     chmod +x "$DEST_DIR/$RATHOLE_SCRIPT"
-    echo -e "${CYAN}Please exit the script and type 'rathole' to run it again${NC}\n"
-    echo -e "${CYAN}For removing script just type: 'rm -rf /usr/bin/rathole'${NC}\n"
+    colorize yelloq "Type 'rathole' to run the script.\n" bold
+    colorize yellow "For removing script type: 'rm -rf /usr/bin/rathole\n" bold
     press_key
     exit 0
 else
