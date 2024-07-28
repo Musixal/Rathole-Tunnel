@@ -823,6 +823,39 @@ tunnel_management() {
 	
 }
 
+remove_core(){
+	echo
+	# If user try to remove core and still a service is running, we should prohibit this.	
+	# Check if any .toml file exists
+	if find "$config_dir" -type f -name "*.toml" | grep -q .; then
+	    colorize red "You should delete all services first and then delete the rathole-core."
+	    sleep 3
+	    return 1
+	else
+	    colorize cyan "No .toml file found in the directory."
+	fi
+
+	echo
+	
+	# Prompt to confirm before removing Rathole-core directory
+	colorize yellow "Do you want to remove rathole-core? (y/n)"
+    read -r confirm
+	echo     
+	if [[ $confirm == [yY] ]]; then
+	    if [[ -d "$config_dir" ]]; then
+	        rm -rf "$config_dir" >/dev/null 2>&1
+	        colorize green "Rathole-core directory removed." bold
+	    else
+	        colorize red "Rathole-core directory not found." bold
+	    fi
+	else
+	    colorize yellow "Rathole core removal canceled."
+	fi
+	
+	echo
+	press_key
+}
+
 destroy_tunnel(){
 	echo
 	#Vaiables
@@ -831,21 +864,6 @@ destroy_tunnel(){
     service_name="rathole-${config_name}.service"
     service_path="$service_dir/$service_name"
     
-	# Prompt to confirm before removing Rathole-core directory
-    echo -ne "${YELLOW}Do you want to remove Rathole-core? (y/n) [no by default]${NC}: " 
-    read -r confirm
-	echo     
-	if [[ $confirm == [yY] ]]; then
-	    if [[ -d "$config_dir" ]]; then
-	        rm -rf "$config_dir" >/dev/null 2>&1
-	        echo -e "${GREEN}Rathole-core directory removed.${NC}\n"
-	    else
-	        echo -e "${RED}Rathole-core directory not found.${NC}\n"
-	    fi
-	else
-	    echo -e "${YELLOW}Rathole core removal canceled.${NC}"
-	fi
-
 	# Check if config exists and delete it
 	if [ -f "$config_path" ]; then
 	  rm -f "$config_path" >/dev/null 2>&1
@@ -853,7 +871,7 @@ destroy_tunnel(){
 
     delete_cron_job $service_name
     
-        # Stop and disable the client service if it exists
+    # Stop and disable the client service if it exists
     if [[ -f "$service_path" ]]; then
         if systemctl is-active "$service_name" &>/dev/null; then
             systemctl disable --now "$service_name" >/dev/null 2>&1
@@ -1606,10 +1624,11 @@ display_menu() {
     colorize green " 1. Configure a new tunnel [IPv4/IPv6]" bold
     colorize red " 2. Tunnel management menu" bold
     colorize cyan " 3. Check tunnels status" bold
- 	echo -e " 4. Optimize Network & System Limits"
- 	echo -e " 5. Install Rathole core"
- 	echo -e " 6. Install & Update script"
- 	echo -e " 7. Change Core [experimental]"
+ 	echo -e " 4. Optimize network & system limits"
+ 	echo -e " 5. Install rathole core"
+ 	echo -e " 6. Install & update script"
+ 	echo -e " 7. Change core [experimental]"
+ 	echo -e " 8. Remove rathole core"
     echo -e " 0. Exit"
     echo
     echo "-------------------------------"
@@ -1617,7 +1636,7 @@ display_menu() {
 
 # Function to read user input
 read_option() {
-    read -p "Enter your choice [0-7]: " choice
+    read -p "Enter your choice [0-8]: " choice
     case $choice in
         1) configure_tunnel ;;
         2) tunnel_management ;;
@@ -1626,6 +1645,7 @@ read_option() {
         5) download_and_extract_rathole "sleep";;
         6) update_script ;;
         7) change_core ;;
+        8) remove_core ;;
         0) exit 0 ;;
         *) echo -e "${RED} Invalid option!${NC}" && sleep 1 ;;
     esac
