@@ -1136,7 +1136,6 @@ if [ -f "$DEST_DIR/$RATHOLE_SCRIPT" ]; then
 else
     echo -e "${YELLOW}$RATHOLE_SCRIPT does not exist in $DEST_DIR. No need to remove.${NC}"
 fi
-echo
 # Download the new rathole.sh from the GitHub URL
 #echo -e "${CYAN}Downloading the new $RATHOLE_SCRIPT from $SCRIPT_URL...${NC}"
 
@@ -1146,7 +1145,7 @@ echo
 if [ $? -eq 0 ]; then
     #echo -e "${GREEN}New $RATHOLE_SCRIPT has been successfully downloaded to $DEST_DIR.${NC}\n"
     chmod +x "$DEST_DIR/$RATHOLE_SCRIPT"
-    colorize yelloq "Type 'rathole' to run the script.\n" bold
+    colorize yellow "Type 'rathole' to run the script.\n" bold
     colorize yellow "For removing script type: 'rm -rf /usr/bin/rathole\n" bold
     press_key
     exit 0
@@ -1626,7 +1625,7 @@ display_menu() {
     colorize cyan " 3. Check tunnels status" bold
  	echo -e " 4. Optimize network & system limits"
  	echo -e " 5. Install rathole core"
- 	echo -e " 6. Install & update script"
+ 	echo -e " 6. Update & install script"
  	echo -e " 7. Change core [experimental]"
  	echo -e " 8. Remove rathole core"
     echo -e " 0. Exit"
