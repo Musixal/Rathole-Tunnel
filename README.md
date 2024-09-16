@@ -15,7 +15,7 @@ Version 2 : Not compatible with the previous version / suggested / multi-service
 ```
 bash <(curl -Ls --ipv4 https://raw.githubusercontent.com/Musixal/rathole-tunnel/main/rathole_v2.sh)
 ```
-# Menu (v2)
+## Menu (v2)
 ![Menu](https://github.com/Musixal/rathole-tunnel/blob/main/menu/menu_v2.png)
 
 
@@ -23,18 +23,22 @@ bash <(curl -Ls --ipv4 https://raw.githubusercontent.com/Musixal/rathole-tunnel/
 
     
 
-# My Telegram channel
+## My Telegram channel
 Check the channel below for more information:
 
 https://t.me/Gozar_Xray
 
-# Donation Link
+## Donation Link
 
 
    <a href="https://nowpayments.io/donation?api_key=6Z16MRY-AF14Y8T-J24TXVS-00RDKK7&source=lk_donation&medium=referral" target="_blank">
      <img src="https://nowpayments.io/images/embeds/donation-button-white.svg" alt="Crypto donation button by NOWPayments">
     </a>
     
-# Rathole source code
+##  Rathole source code
 
 https://github.com/rapiz1/rathole
+
+## Stargazers over time
+[![Stargazers over time](https://starchart.cc/Musixal/Rathole-Tunnel.svg?variant=light)](https://starchart.cc/Musixal/Rathole-Tunnel)
+
