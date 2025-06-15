@@ -178,10 +178,10 @@ download_and_extract_rathole
 #SERVER_IP=$(hostname -I | awk '{print $1}')
 
 # Fetch server country
-SERVER_COUNTRY=$(curl -sS "http://ipwhois.app/json/$SERVER_IP" | jq -r '.country')
+SERVER_COUNTRY=$(curl --max-time 3 -sS "http://ipwhois.app/json/$SERVER_IP" | jq -r '.country')
 
 # Fetch server isp 
-SERVER_ISP=$(curl -sS "http://ipwhois.app/json/$SERVER_IP" | jq -r '.isp')
+SERVER_ISP=$(curl --max-time 3 -sS "http://ipwhois.app/json/$SERVER_IP" | jq -r '.isp')
 
 # Function to display ASCII logo
 # Function to display ASCII logo
